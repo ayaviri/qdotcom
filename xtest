@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd Q/source_files
+mvn test

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd ../Q/source_files
+java -cp ./target/source_files-1.0-SNAPSHOT.jar chen_ayaviri.common.XClients $1
