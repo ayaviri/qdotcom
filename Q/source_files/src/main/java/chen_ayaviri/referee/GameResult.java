@@ -5,16 +5,20 @@ import com.google.gson.JsonElement;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 
 // Represents the results of a game: a pair of the names of the winning players and the names of the eliminated players
 public class GameResult {
     private final List<String> winningPlayers;
     private final List<String> eliminatedPlayers;
 
-    // As of 6, game result is only constructed by the referee
+    // Constructs a new GameResult from the given list of winning players and the 
+    // given list of eliminated players, sorting the list of winning players in
+    // descending alphabetical order
     public GameResult(List<String> winningPlayers, List<String> eliminatedPlayers) {
-        this.winningPlayers = winningPlayers;
-        this.eliminatedPlayers = eliminatedPlayers;
+        this.winningPlayers = new ArrayList<String>(winningPlayers);
+        Collections.sort(this.winningPlayers);
+        this.eliminatedPlayers = new ArrayList<String>(eliminatedPlayers);
     }
 
     public static JsonElement toJson(GameResult gameResult) {

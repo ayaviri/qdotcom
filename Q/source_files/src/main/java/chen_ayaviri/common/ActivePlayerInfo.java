@@ -33,18 +33,21 @@ public class ActivePlayerInfo {
     // Creates a new ActivePlayerInfo object with a copy of each of the fields of the given original
     public ActivePlayerInfo(ActivePlayerInfo copy) {
         this.map = new QMap(copy.getMap());
-//        this.tiles = new ArrayList<>(copy.getTiles());
         this.remainingRefereeTiles = copy.getRemainingRefereeTiles();
         this.playerScores = new ArrayList<Integer>(copy.getPlayerScores());
-//        this.name = copy.name;
-        this.player = copy.player;
+        this.player = new PlayerState(copy.player);
     }
    
-    // TODO: what are the consequences of returning references of the map and hand here ?
+    // TODO: What are the consequences of returning references of the map and hand here ?
     public QMap getMap() {
         return this.map;
     }
-    
+
+    public PlayerState getPlayerState() {
+        return this.player;
+    }
+   
+    // TODO: This needs to be deprecated as the tiles should be obtained through the player state
     public List<Tile> getTiles() {
         return this.player.getTiles();
     }

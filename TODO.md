@@ -19,3 +19,5 @@ socket is closed as soon as the name submission timeout is hit, the referee prox
 the socket isn't closed until the end of the game, no JSON ever comes to the referee proxy, player's lifeline ends at the end of the game
 - GameStates need to (briefly) exist without player proxies...
 
+# Questions
+- A RoundResult has all of the information it needs to determine whether the round it summarises was a terminal round. Should the functionality to check that be in the RoundResult or Referee component ?

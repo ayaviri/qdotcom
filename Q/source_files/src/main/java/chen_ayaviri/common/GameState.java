@@ -26,11 +26,13 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+// Represents the referee's knowledge of a game, including the map, each player's hand
+// and score, and the list of referee tiles
 public class GameState {
     protected int Q_BONUS;
     protected int END_OF_GAME_BONUS;
     private final QMap map;
-    // NOTE: it is assumed that no two players have the same name
+    // NOTE: It is assumed that no two players have the same name
     private final Players players;
     private final List<Tile> refereeTiles;
 
@@ -149,6 +151,8 @@ public class GameState {
         return this.getInfoForPlayer(this.players.getActivePlayerState());
     }
 
+    // TODO: Is this needed anymore ? The player setup issue in the referee has been resolved by advancing the queue
+    // after each call to setup
     // Info for the GIVEN player containing copies of public information the game state
     public ActivePlayerInfo getInfoForPlayer(PlayerState player) {
         return new ActivePlayerInfo(
@@ -161,8 +165,8 @@ public class GameState {
         );
     }
 
-    // specifically used by the referee to rotate the active player when setting players up.
-    public void updateActivePlayer() {
+    // Advances the player queue, moving the current active player to the back of the queue
+    public void advancePlayerQueue() {
         this.players.updateActive();
     }
 
@@ -186,7 +190,6 @@ public class GameState {
     public TurnResult performCheckedTurnAction(TurnAction action) {
         TurnResult.Builder turnResultBuilder = new TurnResult.Builder(action);
         action.performCheckedOn(this, this.players.getActivePlayerState(), turnResultBuilder);
-        this.players.updateActive();
         return turnResultBuilder.build();
     }
 

@@ -399,107 +399,107 @@ public class RefereeTest {
         assertEquals(new ArrayList<>(Arrays.asList("Joshua")), gameResult.getEliminatedPlayers());
     }
 
-     @Test
-     public void testNoFitAndNoFitAndBadAsk() {
-         NoFitPlayer p = new NoFitPlayer("Joshua", new DAG());
-         NoFitPlayer k = new NoFitPlayer("k", new DAG());
-         BadAskForTilePlayer player1 = new BadAskForTilePlayer("player1", new DAG());
-         players.add(p);
-         players.add(k);
-         players.add(player1);
-         playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
-         playerTiles.put("k", new ArrayList<>(Arrays.asList(redStar, greenCircle, yellowCircle)));
-         playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-         gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
+    @Test
+    public void testNoFitAndNoFitAndBadAsk() {
+        NoFitPlayer p = new NoFitPlayer("Joshua", new DAG());
+        NoFitPlayer k = new NoFitPlayer("k", new DAG());
+        BadAskForTilePlayer player1 = new BadAskForTilePlayer("player1", new DAG());
+        players.add(p);
+        players.add(k);
+        players.add(player1);
+        playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
+        playerTiles.put("k", new ArrayList<>(Arrays.asList(redStar, greenCircle, yellowCircle)));
+        playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
+        gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
 
-         Referee referee = new Referee(gameState);
+        Referee referee = new Referee(gameState);
 
-         GameResult gameResult = referee.playToCompletion();
+        GameResult gameResult = referee.playToCompletion();
 
-         assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-         assertEquals(new ArrayList<>(Arrays.asList("Joshua", "k")), gameResult.getEliminatedPlayers());
-     }
+        assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
+        assertEquals(new ArrayList<>(Arrays.asList("Joshua", "k")), gameResult.getEliminatedPlayers());
+    }
 
-     @Test
-     public void testDAGAndNoFitAndNoFitAndBadAsk() {
-         IPlayer goodplayer = new LocalPlayer("goodplayer", new DAG());
-         NoFitPlayer p = new NoFitPlayer("Joshua", new DAG());
-         NoFitPlayer k = new NoFitPlayer("k", new DAG());
-         BadAskForTilePlayer player1 = new BadAskForTilePlayer("player1", new DAG());
-         players.add(goodplayer);
-         players.add(p);
-         players.add(k);
-         players.add(player1);
-         playerTiles.put("goodplayer", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
-         playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
-         playerTiles.put("k", new ArrayList<>(Arrays.asList(redStar, greenCircle, yellowCircle)));
-         playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-         gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
+    @Test
+    public void testDAGAndNoFitAndNoFitAndBadAsk() {
+        IPlayer goodplayer = new LocalPlayer("goodplayer", new DAG());
+        NoFitPlayer p = new NoFitPlayer("Joshua", new DAG());
+        NoFitPlayer k = new NoFitPlayer("k", new DAG());
+        BadAskForTilePlayer player1 = new BadAskForTilePlayer("player1", new DAG());
+        players.add(goodplayer);
+        players.add(p);
+        players.add(k);
+        players.add(player1);
+        playerTiles.put("goodplayer", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
+        playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
+        playerTiles.put("k", new ArrayList<>(Arrays.asList(redStar, greenCircle, yellowCircle)));
+        playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
+        gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
 
-         Referee referee = new Referee(gameState);
+        Referee referee = new Referee(gameState);
 
-         GameResult gameResult = referee.playToCompletion();
+        GameResult gameResult = referee.playToCompletion();
 
-         assertEquals(new ArrayList<>(Arrays.asList("goodplayer")), gameResult.getWinningPlayers());
-         assertEquals(new ArrayList<>(Arrays.asList("Joshua", "k")), gameResult.getEliminatedPlayers());
-     }
+        assertEquals(new ArrayList<>(Arrays.asList("goodplayer")), gameResult.getWinningPlayers());
+        assertEquals(new ArrayList<>(Arrays.asList("Joshua", "k")), gameResult.getEliminatedPlayers());
+    }
 
-     @Test
-     public void testDAGAndTakeTurnCommFailureAndNoFitAndNoFitAndBadAsk() {
-         IPlayer goodplayer = new LocalPlayer("goodplayer", new DAG());
-         TakeTurnCommFailurePlayer ttexn = new TakeTurnCommFailurePlayer("ttexn", new DAG());
-         NoFitPlayer p = new NoFitPlayer("Joshua", new DAG());
-         NoFitPlayer k = new NoFitPlayer("k", new DAG());
-         BadAskForTilePlayer player1 = new BadAskForTilePlayer("player1", new DAG());
-         players.add(goodplayer);
-         players.add(ttexn);
-         players.add(p);
-         players.add(k);
-         players.add(player1);
-         playerTiles.put("goodplayer", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
-         playerTiles.put("ttexn", new ArrayList<>(Arrays.asList(redStar)));
-         playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
-         playerTiles.put("k", new ArrayList<>(Arrays.asList(redStar, greenCircle, yellowCircle)));
-         playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-         gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
+    @Test
+    public void testDAGAndTakeTurnCommFailureAndNoFitAndNoFitAndBadAsk() {
+        IPlayer goodplayer = new LocalPlayer("goodplayer", new DAG());
+        TakeTurnCommFailurePlayer ttexn = new TakeTurnCommFailurePlayer("ttexn", new DAG());
+        NoFitPlayer p = new NoFitPlayer("Joshua", new DAG());
+        NoFitPlayer k = new NoFitPlayer("k", new DAG());
+        BadAskForTilePlayer player1 = new BadAskForTilePlayer("player1", new DAG());
+        players.add(goodplayer);
+        players.add(ttexn);
+        players.add(p);
+        players.add(k);
+        players.add(player1);
+        playerTiles.put("goodplayer", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
+        playerTiles.put("ttexn", new ArrayList<>(Arrays.asList(redStar)));
+        playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
+        playerTiles.put("k", new ArrayList<>(Arrays.asList(redStar, greenCircle, yellowCircle)));
+        playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
+        gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
-         Referee referee = new Referee(gameState);
+        Referee referee = new Referee(gameState);
 
-         GameResult gameResult = referee.playToCompletion();
+        GameResult gameResult = referee.playToCompletion();
 
-         assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-         assertEquals(new ArrayList<>(Arrays.asList("ttexn","Joshua", "k")), gameResult.getEliminatedPlayers());
-     }
+        assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
+        assertEquals(new ArrayList<>(Arrays.asList("ttexn","Joshua", "k")), gameResult.getEliminatedPlayers());
+    }
 
-     @Test
-     public void testDAGAndTakeTurnCommFailureAndNoFitAndNoFitAndBadAskButLDASG() {
-         IPlayer goodplayer = new LocalPlayer("goodplayer", new DAG());
-         TakeTurnCommFailurePlayer ttexn = new TakeTurnCommFailurePlayer("ttexn", new DAG());
-         NoFitPlayer p = new NoFitPlayer("Joshua", new DAG());
-         NoFitPlayer nofitp = new NoFitPlayer("nofitp", new DAG());
-         BadAskForTilePlayer player1 = new BadAskForTilePlayer("player1", new DAG());
-         IPlayer mcldasg = new LocalPlayer("mcldasg", new LDASG());
-         players.add(goodplayer);
-         players.add(ttexn);
-         players.add(p);
-         players.add(nofitp);
-         players.add(player1);
-         players.add(mcldasg);
-         playerTiles.put("goodplayer", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
-         playerTiles.put("ttexn", new ArrayList<>(Arrays.asList(redStar)));
-         playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
-         playerTiles.put("nofitp", new ArrayList<>(Arrays.asList(redStar, greenCircle, yellowCircle)));
-         playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-         playerTiles.put("mcldasg", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, redStar, greenCircle, yellowCircle)));
-         gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
+    @Test
+    public void testDAGAndTakeTurnCommFailureAndNoFitAndNoFitAndBadAskButLDASG() {
+        IPlayer goodplayer = new LocalPlayer("goodplayer", new DAG());
+        TakeTurnCommFailurePlayer ttexn = new TakeTurnCommFailurePlayer("ttexn", new DAG());
+        NoFitPlayer p = new NoFitPlayer("Joshua", new DAG());
+        NoFitPlayer nofitp = new NoFitPlayer("nofitp", new DAG());
+        BadAskForTilePlayer player1 = new BadAskForTilePlayer("player1", new DAG());
+        IPlayer mcldasg = new LocalPlayer("mcldasg", new LDASG());
+        players.add(goodplayer);
+        players.add(ttexn);
+        players.add(p);
+        players.add(nofitp);
+        players.add(player1);
+        players.add(mcldasg);
+        playerTiles.put("goodplayer", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
+        playerTiles.put("ttexn", new ArrayList<>(Arrays.asList(redStar)));
+        playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
+        playerTiles.put("nofitp", new ArrayList<>(Arrays.asList(redStar, greenCircle, yellowCircle)));
+        playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
+        playerTiles.put("mcldasg", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, redStar, greenCircle, yellowCircle)));
+        gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
-         Referee referee = new Referee(gameState);
+        Referee referee = new Referee(gameState);
 
-         GameResult gameResult = referee.playToCompletion();
+        GameResult gameResult = referee.playToCompletion();
 
-         assertEquals(new ArrayList<>(Arrays.asList("mcldasg")), gameResult.getWinningPlayers());
-         assertEquals(new ArrayList<>(Arrays.asList("ttexn","Joshua", "nofitp")), gameResult.getEliminatedPlayers());
-     }
+        assertEquals(new ArrayList<>(Arrays.asList("mcldasg")), gameResult.getWinningPlayers());
+        assertEquals(new ArrayList<>(Arrays.asList("ttexn","Joshua", "nofitp")), gameResult.getEliminatedPlayers());
+    }
 }

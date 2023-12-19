@@ -29,18 +29,19 @@ public class Referee {
     private final int HAND_SIZE = 6;
     private final int COMMUNICATION_TIMEOUT_SECONDS;
     private GameState gameState;
-    // NOTE: this MUST be initialised before any communication with a remote player
+    // NOTE: This MUST be initialised before any communication with a remote player
     private final List<String> eliminatedPlayers; 
     private final List<IObserver> observers;
 
     // Creates a referee with a list of player proxy/name pairs and a configuration.
-    // NOTE: assumes each player has a unique name
+    // NOTE: Assumes each player has a unique name
     public Referee(List<IPlayer> players, RefereeConfig refereeConfig) {
         this(refereeConfig.getInitialState(), refereeConfig, players);
     }
 
     // Create a referee with an in-progress game state to continue playing from
-    // and sets up IN-HOUSE players with the starting state
+    // and sets up IN-HOUSE players with the starting state. This constructor is 
+    // for testing purposes
     public Referee(GameState gameState) {
         this(gameState, new RefereeConfig(), new ArrayList<>());
     }
@@ -52,73 +53,69 @@ public class Referee {
         this.COMMUNICATION_TIMEOUT_SECONDS = refereeConfig.getPerTurnTimeout();
         this.eliminatedPlayers = new ArrayList<String>();
         this.observers = new ArrayList<IObserver>();
-
-        if (!players.isEmpty()) {
-            // Must inject remote player proxies into the referee's game state
-            this.gameState = new GameState(initialState, players);
-        } else {
-            this.gameState = initialState;
-        }
-
+        this.setInitialGameState(initialState, players);
         this.gameState.initializeScoringConstants(refereeConfig.getGameStateConfig());
         this.possiblyAddObserver(refereeConfig.hasObserverAttached());
         this.setupPlayers(this.gameState.getPlayerStates());
     }
 
-    public void addObserver(Observer observer) {
+    public void addObserver(IObserver observer) {
         this.observers.add(observer);
     }
 
-    // Plays the game to completion from the referee's current game state information
-    // Returns the result of the game
+    // Plays a game until it is over, alerts the remaining players of their win/lose 
+    // status, and returns the result of the game
     public GameResult playToCompletion() {
-        Optional<List<TurnAction>> roundTurnActions;
-
-        do {
-            roundTurnActions = this.playRound();
-        } while (!this.gameEndedMidRound(roundTurnActions) && !this.isTerminalRound(roundTurnActions.get()));
-
+        this.playGame();
         List<String> winningPlayers = this.alertPlayersOfFinalStatus();
         this.sendGameOverToObservers();
 
         return new GameResult(winningPlayers, this.eliminatedPlayers);
     }
 
+    // Plays a game until it is over, accumulating a list of each player's score in this
+    // referee's game state and a list of eliminated players in this referee
+    protected void playGame() {
+        Optional<List<TurnAction>> roundTurnActions;
+        RoundResult roundResult;
+
+        do {
+            roundResult = this.playRound();
+        } while (!this.isTerminalRound(roundResult));
+    }
+
     // Plays a complete round of n turns, where n is the number of players at the start of round
-    // Returns the list of all turn actions taken during the round if the round ended successfully
-    // Returns empty object if the game ended mid-round
-    protected Optional<List<TurnAction>> playRound() {
+    // Returns the result of the round
+    protected RoundResult playRound() {
         int numberOfTurns = this.gameState.getNumberOfPlayers();
+        boolean hadGameEndingTurn = false;
         List<TurnAction> turnActions = new ArrayList<TurnAction>();
 
-
-        for(int _ = 0; _ < numberOfTurns; _++) {
-            // TODO: see if one of the call to isTerminalTurn can be removed
+        for (int _ = 0; _ < numberOfTurns; _++) {
             Optional<TurnResult> potentialTurnResult = this.playTurn();
 
-            if (potentialTurnResult.isPresent()) {
+            if (this.hasTurnAction(potentialTurnResult)) {
                 TurnResult turnResult = potentialTurnResult.get();
 
                 if (this.isTerminalTurn(turnResult)) {
-                    return Optional.empty();
+                    hadGameEndingTurn = true;
+                    break;
                 } else {
                     turnActions.add(turnResult.getTurnAction());
                 }
             }
         }
 
-        return Optional.of(turnActions);
+        return new RoundResult(hadGameEndingTurn, turnActions);
     }
    
     // Plays a turn for the active player, returning the result of the turn, empty
     // if no turn action was obtained from the player
-    // NOTE: If a player breaks a game rule or raises an exception during the calls to takeTurn or newTiles,
-    // the player is eliminated
     protected Optional<TurnResult> playTurn() {
         this.sendStateToObservers();
         ActivePlayerInfo activePlayerInfo = this.gameState.getInfoForActivePlayer();
-        PlayerState activePlayerState = this.gameState.getActivePlayerState();
-        CommunicationResult<TurnAction> turnActionCommunication = this.tryCommunication(
+        PlayerState activePlayerState = activePlayerInfo.getPlayerState();
+        CommunicationResult<TurnAction> turnActionCommunication = this.attemptTimedCommunication(
             new TakeTurn(activePlayerState.getProxy(), activePlayerInfo),
             activePlayerState.getName()
         );
@@ -135,21 +132,45 @@ public class Referee {
         }
     }
 
+    // Plays the given turn action for the given active player and 
+    // returns its result, checking the legality of the turn before doing so
     protected TurnResult playTurnWithAction(TurnAction turnAction, PlayerState activePlayerState)  {
         if (this.gameState.checkLegalityOf(turnAction)) {
-            TurnResult turnResult = this.gameState.performCheckedTurnAction(turnAction);
-
-            if (!this.isTerminalTurn(turnResult)) {
-                this.tryCommunication(
-                    new NewTiles(activePlayerState.getProxy(), turnResult.getNewTiles()),
-                    activePlayerState.getName()
-                );
-            }
-
+            TurnResult turnResult = this.playLegalTurnWithAction(turnAction, activePlayerState);
             return turnResult;
         } else {
             this.eliminatePlayer(activePlayerState.getName());
             return new TurnResult.Builder(turnAction).build();
+        }
+    }
+
+    // Plays the given LEGAL turn action for the given active player and
+    // returns its result. If the turn does not end the game, this method gives the player their
+    // new tiles and advances the player queue to point to the next active player 
+    protected TurnResult playLegalTurnWithAction(TurnAction turnAction, PlayerState activePlayerState) {
+        TurnResult turnResult = this.gameState.performCheckedTurnAction(turnAction);
+
+        if (!this.isTerminalTurn(turnResult)) {
+            // TODO: The specification does not seem to suggest that a player that performs a pass action
+            // gets their NewTiles method called
+            this.attemptTimedCommunication(
+                new NewTiles(activePlayerState.getProxy(), turnResult.getNewTiles()),
+                activePlayerState.getName()
+            );
+            this.gameState.advancePlayerQueue();
+        }
+
+        return turnResult;
+    }
+
+    // Sets the given state to this referee's initial one, injecting the list of players into the
+    // state if it is non-empty
+    protected void setInitialGameState(GameState initialState, List<IPlayer> players) {
+        if (players.isEmpty()) {
+            this.gameState = initialState;
+        } else {
+            // Must inject remote player proxies into the referee's game state
+            this.gameState = new GameState(initialState, players);
         }
     }
 
@@ -160,79 +181,21 @@ public class Referee {
         }
     }
 
-    // Constructs the entire shuffled list of tiles with which the game is played,
-    // Constructs the players hands,
-    // Initialises the map with the first referee tile,
-    // Initialises the game state with the players, the map, and the remaining referee tiles
-    // protected GameState constructNewGameState(List<Pair<String, IPlayerProxy>> players) {
-    //     List<Tile> remainingTiles = this.initialiseTiles();
-    //     Map<String, List<Tile>> playerHandMap = this.constructPlayerHands(players, remainingTiles);
-    //     QMap map = this.initialiseMap(remainingTiles);
-    //     return new GameState(players, playerHandMap, map, remainingTiles);
-    // }
-
-    // Constructs, shuffles, and returns the entire collection of tiles for the game
-    // protected List<Tile> initialiseTiles() {
-    //     Set<Tile> distinctTiles = Tile.getAllDistinct();
-    //     List<Tile> allTiles = new ArrayList<>();
-
-    //     for (Tile tile : distinctTiles) {
-    //         allTiles.addAll(Collections.nCopies(this.COPIES_PER_TILE, tile));
-    //     }
-
-    //     Collections.shuffle(allTiles);
-
-    //     return allTiles;
-    // }
-
-    // Constructs a map with the first tile in the given list of tiles
-    // protected QMap initialiseMap(List<Tile> tiles) {
-    //     return new QMap(tiles.remove(0));
-    // }
-
-    // Sets up each player in the given list with the given map and their tiles
-    // NOTE: If a player raises an exception during the call to setup, the player is eliminated
-    // OTHERWISE: the order of players in the game state rotated.
-    // The final state of the gamestate should be that players are in order of descending age, with some
-    // players possibly lost in the process
+    // Sets up each player in the given list with this referee's game state's 
+    // initial map and each player's tiles, advancing the game state's player queue
+    // in order to obtain the correct set of tiles 
     protected void setupPlayers(List<PlayerState> playerStates) {
         for (PlayerState playerState : playerStates) {
-            ActivePlayerInfo info = this.gameState.getInfoForActivePlayer();
-            Callable<Void> setupCall = new Setup(playerState.getProxy(), info, info.getTiles());
-            //NOTE: if the communication result has succeeded,
-            //      then the player was not removed and the players are rotated.
-            CommunicationResult<Void> result = this.tryCommunication(setupCall, playerState.getName());
-            if (result.hasSucceeded()) {
-                this.gameState.updateActivePlayer();
+            ActivePlayerInfo activePlayerInfo = this.gameState.getInfoForActivePlayer();
+            CommunicationResult<Void> setupResult = this.attemptTimedCommunication(
+                new Setup(playerState.getProxy(), activePlayerInfo, activePlayerInfo.getTiles()), 
+                playerState.getName()
+            );
+
+            if (setupResult.hasSucceeded()) {
+                this.gameState.advancePlayerQueue();
             }
         }
-    }
-
-    // Constructs and returns a map of player names to their initial hands, removing 
-    // from the given list of tiles to do so
-    // protected Map<String, List<Tile>> constructPlayerHands(List<Pair<String, IPlayerProxy>> playerNames, List<Tile> tiles) {
-    //     Map<String, List<Tile>> playerHandMap = new HashMap<>();
-
-    //     for (Pair<String, IPlayerProxy> playerName : playerNames) {
-    //         String name = playerName.getFirst();
-    //         List<Tile> playerHand = this.constructPlayerHand(tiles);
-    //         playerHandMap.put(name, playerHand);
-    //     }
-
-    //     return playerHandMap;
-    // }
-
-    // Constructs and returns the hand for a single player
-    // Assumes an already randomised list of tiles
-    // Mutates the given list of tiles by removing the players hands from it
-    private List<Tile> constructPlayerHand(List<Tile> remainingTiles) {
-        List<Tile> playerHand = new ArrayList<>();
-
-        for (int index = 0; index < this.HAND_SIZE; index++) {
-            playerHand.add(remainingTiles.remove(0));
-        }
-
-        return playerHand;
     }
 
     // Eliminates the player with the given name from the game for breaking the rules
@@ -243,48 +206,54 @@ public class Referee {
 
     // Returns the list of the names of the winning players
     protected List<String> determineWinningPlayers() {
-        List<String> winningPlayers = new ArrayList<String>();
         int maxScore = this.calculateMaxScore();
+        List<String> winningPlayers = this.getPlayerNamesWithScore(maxScore);
+
+        return winningPlayers;
+    }
+
+    // Returns a list of names corresponding to players in the game with the given score
+    protected List<String> getPlayerNamesWithScore(int score) {
+        List<String> playerNames = new ArrayList<>();
 
         for (PlayerState playerState : this.gameState.getPlayerStates()) {
-            if (playerState.getScore() == maxScore) {
-                winningPlayers.add(playerState.getName());
+            if (playerState.getScore() == score) {
+                playerNames.add(playerState.getName());
             }
         }
 
-        return winningPlayers;
+        return playerNames;
     }
 
     // Determines the winning players, communicates to each non-eliminated player whether they won or
-    // lost, and returns the list of their names in alphabetically sorted order
-    // NOTE: If a player raises an exception during the call to win, the player is eliminated
+    // lost, and returns the list of their names
     protected List<String> alertPlayersOfFinalStatus() {
         List<String> winningPlayers = this.determineWinningPlayers();
-        Collections.sort(winningPlayers);
        
         for (PlayerState playerState : this.gameState.getPlayerStates()) {
-            String name = playerState.getName();
-            boolean isWinner = winningPlayers.contains(name);
-            Callable<Void> winCall = new Win(playerState.getProxy(),isWinner);
-            CommunicationResult<Void> winCommunication = this.tryCommunication(winCall, name);
+            boolean isWinner = winningPlayers.contains(playerState.getName());
+            CommunicationResult<Void> winCommunication = this.attemptTimedCommunication(
+                new Win(playerState.getProxy(), isWinner), 
+                playerState.getName()
+            );
 
-            // TODO: consider making a new punishment out of this to remove this if statement
+            // TODO: Can this be made a punishment to be passed into attemptedTimedCommunication ?
             if (!winCommunication.hasSucceeded() && isWinner) {
-                winningPlayers.remove(name);
+                winningPlayers.remove(playerState.getName());
             }
         }
 
         return winningPlayers;
     }
 
-    // Returns true if the given object is empty, meaning the round was unfinished. See playRound
-    protected boolean gameEndedMidRound(Optional<List<TurnAction>> turnActions) {
-        return !turnActions.isPresent();
+    // Returns true if the given RoundResult summarises a round that ends the game
+    protected boolean isTerminalRound(RoundResult roundResult) {
+        return roundResult.hadGameEndingTurn() || this.hasNoPlaceActions(roundResult.getTurnActions());
     }
 
     // Returns true if the given list of turn actions doesn't contain a place action
     // NOTE: Assumes that the given list is nonempty
-    protected boolean isTerminalRound(List<TurnAction> turnActions) {
+    protected boolean hasNoPlaceActions(List<TurnAction> turnActions) {
         for (TurnAction turnAction : turnActions) {
             if (turnAction instanceof GameState.PlaceAction) {
                 return false;
@@ -294,6 +263,12 @@ public class Referee {
         return true;
     }
 
+    // Returns true if the given TurnResult is present
+    protected boolean hasTurnAction(Optional<TurnResult> turnResult) {
+        return turnResult.isPresent();
+    }
+
+    // Returns true if all tiles were placed during the turn or if the game has no remaining players
     protected boolean isTerminalTurn(TurnResult turnResult) {
         return turnResult.placedAllTiles() || !this.hasRemainingPlayers();
     }
@@ -302,7 +277,6 @@ public class Referee {
         return this.gameState.getNumberOfPlayers() > 0;
     }
 
-    // TODO: perhaps move into GameState ?
     protected int calculateMaxScore() {
         int maxScore = 0;
 
@@ -313,9 +287,11 @@ public class Referee {
         return maxScore;
     }
 
-    // Attempts to communicate with the remote player by calling the given Callable 
+    // Attempts to communicate with the remote player by calling the given Callable, defaulting
+    // to a punishment that removes the player with the given name from the game in the case of 
+    // player exception raising or excess of the timeout limit.
     // Returns the result of the communication, see CommunicationResult interpretation statement
-    protected <T> CommunicationResult<T> tryCommunication(Callable<T> callable, String name) {
+    protected <T> CommunicationResult<T> attemptTimedCommunication(Callable<T> callable, String name) {
         TimedCommunication<T> timedCommunication = new TimedCommunication<T>(
             callable, 
             this.COMMUNICATION_TIMEOUT_SECONDS, 
@@ -326,7 +302,7 @@ public class Referee {
     }
 
     // Sends the current game state to each of observers of this referee
-    // NOTE: assumes that the observers are server side and thus cannot misbehave 
+    // NOTE: Assumes that the observers are server side and thus cannot misbehave 
     // _in the same way_ that remote players can
     protected void sendStateToObservers() {
         for (IObserver observer : this.observers) {
