@@ -68,11 +68,10 @@ public class WaitingPeriod implements Callable<Void> {
 
     // Attempts to the get a player's name through the given socket using this WaitingPeriod's timeout
     protected CommunicationResult<String> attemptToGetPlayerName(Socket playerSocket) {
-        TimedCommunication<String> timedCommunication = new TimedCommunication<>(
+        TimedCommunication<String> timedCommunication = new TimedCommunication.Builder<>(
             new NameSubmission(playerSocket),
-            this.NAME_SUBMISSION_PERIOD_SECONDS,
-            new PunishmentAbsence() // TODO: Consider the use of a SocketClosurePunishment here
-        );
+            this.NAME_SUBMISSION_PERIOD_SECONDS
+        ).build();
         CommunicationResult<String> nameCommunicationResult = timedCommunication.attempt();
 
         return nameCommunicationResult;

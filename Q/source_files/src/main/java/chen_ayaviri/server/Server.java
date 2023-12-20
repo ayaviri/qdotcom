@@ -56,23 +56,20 @@ public class Server {
         List<IPlayer> players = new ArrayList<>();
 
         do {
-            // TODO: The WaitingPeriod callable shouldn't also return the players if the intention is for the reference to the
-            // list for it populate to be passed in
-            TimedCommunication<Void> timedCommunication = new TimedCommunication<>(
-                new WaitingPeriod(
-                    this.serverSocket, 
-                    players, 
-                    this.openedSockets, 
-                    this.NAME_SUBMISSION_PERIOD_SECONDS
-                ),
-                this.WAITING_PERIOD_SECONDS,
-                new PunishmentAbsence()
-            );
-            timedCommunication.attempt();
+            this.executeWaitingPeriod(players);
             waitingRoundsCompleted += 1;
         } while (this.canSignUpMorePlayers(players.size()) && this.canWaitAnotherRound(waitingRoundsCompleted));
 
         return players;
+    }
+
+    // Executes a waiting period that populates the given list of players with new ones that sign up
+    // during it
+    protected void executeWaitingPeriod(List<IPlayer> players) {
+        new TimedCommunication.Builder<>(
+            new WaitingPeriod(this.serverSocket, players, this.openedSockets, this.NAME_SUBMISSION_PERIOD_SECONDS),
+            this.WAITING_PERIOD_SECONDS
+        ).build().attempt();
     }
 
     // Returns true if the given number of players is at least as big as the minimum

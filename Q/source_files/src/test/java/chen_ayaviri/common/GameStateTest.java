@@ -119,10 +119,13 @@ public class GameStateTest {
         TurnAction passAction = new GameState.PassAction();
         assertEquals(this.player2, gameState.getActivePlayerState().getName());
         gameState.performCheckedTurnAction(passAction);
+        gameState.advancePlayerQueue();
         assertEquals(this.player3, gameState.getActivePlayerState().getName());
         gameState.performCheckedTurnAction(passAction);
+        gameState.advancePlayerQueue();
         assertEquals(this.player1, gameState.getActivePlayerState().getName());
         gameState.performCheckedTurnAction(passAction);
+        gameState.advancePlayerQueue();
         assertEquals(this.player2, gameState.getActivePlayerState().getName());
     }
 
@@ -158,6 +161,7 @@ public class GameStateTest {
 
         assertTrue(gameState.checkLegalityOf(placeAction));
         gameState.performCheckedTurnAction(placeAction);
+        gameState.advancePlayerQueue();
         ActivePlayerInfo gameStateInfo = gameState.getInfoForActivePlayer();
         assertEquals(player3, gameState.getActivePlayerState().getName());
         assertEquals(new ArrayList<Tile>(Arrays.asList(orange8Star, purpleSquare, red8Star, blueStar)), gameState.getRefereeTiles());
@@ -184,6 +188,7 @@ public class GameStateTest {
 
         assertTrue(gameState.checkLegalityOf(placeAction));
         gameState.performCheckedTurnAction(placeAction);
+        gameState.advancePlayerQueue();
         ActivePlayerInfo gameStateInfo = gameState.getInfoForActivePlayer();
         assertEquals(player3, gameState.getActivePlayerState().getName());
         assertEquals(new ArrayList<Tile>(Arrays.asList(purpleSquare, red8Star, blueStar)), gameState.getRefereeTiles());
@@ -213,6 +218,7 @@ public class GameStateTest {
 
         assertTrue(gameState.checkLegalityOf(placeAction));
         gameState.performCheckedTurnAction(placeAction);
+        gameState.advancePlayerQueue();
         ActivePlayerInfo gameStateInfo = gameState.getInfoForActivePlayer();
         assertEquals(player3, gameState.getActivePlayerState().getName());
         assertEquals(new ArrayList<Tile>(Arrays.asList(red8Star, blueStar)), gameState.getRefereeTiles());

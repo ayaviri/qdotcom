@@ -16,6 +16,7 @@ import chen_ayaviri.server.TimedCommunication;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Supplier;
 
 // Represents a referee that can run a game to completion given a sorted list of players
 // NOTE: If a player misbehaves at any point during the game (including pre-game and post-game interactions),
@@ -153,14 +154,18 @@ public class Referee {
         if (!this.isTerminalTurn(turnResult)) {
             // TODO: The specification does not seem to suggest that a player that performs a pass action
             // gets their NewTiles method called
-            this.attemptTimedCommunication(
+            this.attemptTimedCommunicationWithReward(
                 new NewTiles(activePlayerState.getProxy(), turnResult.getNewTiles()),
-                activePlayerState.getName()
+                activePlayerState.getName(),
+                new PlayerQueueAdvancement(this)
             );
-            this.gameState.advancePlayerQueue();
         }
 
         return turnResult;
+    }
+
+    protected void advancePlayerQueue() {
+        this.gameState.advancePlayerQueue();
     }
 
     // Sets the given state to this referee's initial one, injecting the list of players into the
@@ -187,14 +192,11 @@ public class Referee {
     protected void setupPlayers(List<PlayerState> playerStates) {
         for (PlayerState playerState : playerStates) {
             ActivePlayerInfo activePlayerInfo = this.gameState.getInfoForActivePlayer();
-            CommunicationResult<Void> setupResult = this.attemptTimedCommunication(
+            CommunicationResult<Void> setupResult = this.attemptTimedCommunicationWithReward(
                 new Setup(playerState.getProxy(), activePlayerInfo, activePlayerInfo.getTiles()), 
-                playerState.getName()
+                playerState.getName(),
+                new PlayerQueueAdvancement(this)
             );
-
-            if (setupResult.hasSucceeded()) {
-                this.gameState.advancePlayerQueue();
-            }
         }
     }
 
@@ -207,9 +209,9 @@ public class Referee {
     // Returns the list of the names of the winning players
     protected List<String> determineWinningPlayers() {
         int maxScore = this.calculateMaxScore();
-        List<String> winningPlayers = this.getPlayerNamesWithScore(maxScore);
+        List<String> winners = this.getPlayerNamesWithScore(maxScore);
 
-        return winningPlayers;
+        return winners;
     }
 
     // Returns a list of names corresponding to players in the game with the given score
@@ -228,22 +230,17 @@ public class Referee {
     // Determines the winning players, communicates to each non-eliminated player whether they won or
     // lost, and returns the list of their names
     protected List<String> alertPlayersOfFinalStatus() {
-        List<String> winningPlayers = this.determineWinningPlayers();
+        List<String> winners = this.determineWinningPlayers();
        
         for (PlayerState playerState : this.gameState.getPlayerStates()) {
-            boolean isWinner = winningPlayers.contains(playerState.getName());
-            CommunicationResult<Void> winCommunication = this.attemptTimedCommunication(
+            boolean isWinner = winners.contains(playerState.getName());
+            CommunicationResult<Void> winCommunication = this.attemptTimedCommunicationWithPunishment(
                 new Win(playerState.getProxy(), isWinner), 
-                playerState.getName()
+                new WinnerRemovalPunishment(winners, playerState.getName())
             );
-
-            // TODO: Can this be made a punishment to be passed into attemptedTimedCommunication ?
-            if (!winCommunication.hasSucceeded() && isWinner) {
-                winningPlayers.remove(playerState.getName());
-            }
         }
 
-        return winningPlayers;
+        return winners;
     }
 
     // Returns true if the given RoundResult summarises a round that ends the game
@@ -287,16 +284,38 @@ public class Referee {
         return maxScore;
     }
 
-    // Attempts to communicate with the remote player by calling the given Callable, defaulting
-    // to a punishment that removes the player with the given name from the game in the case of 
-    // player exception raising or excess of the timeout limit.
-    // Returns the result of the communication, see CommunicationResult interpretation statement
+    // Executes the given callable, which represents a communication attempt with a remote player, with a 
+    // timeout limit defined by this referee. The failure callback defaults to removal of the player with
+    // the given name. Returns the result of the communication
     protected <T> CommunicationResult<T> attemptTimedCommunication(Callable<T> callable, String name) {
-        TimedCommunication<T> timedCommunication = new TimedCommunication<T>(
+        TimedCommunication<T> timedCommunication = new TimedCommunication.Builder<T>(
             callable, 
-            this.COMMUNICATION_TIMEOUT_SECONDS, 
+            this.COMMUNICATION_TIMEOUT_SECONDS
+        ).failureCallback(
             new PlayerRemovalPunishment(this, name)
-        );
+        ).build();
+
+        return timedCommunication.attempt();
+    }
+
+    // Same as above, but executes the given failure callback instead of defaulting to player removal
+    protected <T> CommunicationResult<T> attemptTimedCommunicationWithPunishment(Callable<T> callable, Supplier<Void> failureCallback) {
+        TimedCommunication<T> timedCommunication = new TimedCommunication.Builder<T>(
+            callable, 
+            this.COMMUNICATION_TIMEOUT_SECONDS
+        ).failureCallback(failureCallback).build();
+
+        return timedCommunication.attempt();
+    }
+
+    // Same as attemptTimedCommunication, but adds the given success callback, which is executed upon success
+    protected <T> CommunicationResult<T> attemptTimedCommunicationWithReward(Callable<T> callable, String name, Supplier<Void> successCallback) {
+        TimedCommunication<T> timedCommunication = new TimedCommunication.Builder<T>(
+            callable, 
+            this.COMMUNICATION_TIMEOUT_SECONDS
+        ).failureCallback(
+            new PlayerRemovalPunishment(this, name)
+        ).successCallback(successCallback).build();
 
         return timedCommunication.attempt();
     }
