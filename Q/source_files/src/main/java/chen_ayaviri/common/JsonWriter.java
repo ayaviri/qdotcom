@@ -16,7 +16,7 @@ public class JsonWriter {
     
     public void write(JsonElement jsonElement) {
         String string = jsonElement.toString();
-        string = this.padMessage(string);
+        string = this.possiblyPadMessage(string);
 
         this.writer.write(string);
     }
@@ -29,7 +29,7 @@ public class JsonWriter {
         this.writer.close();
     }
 
-    protected String padMessage(String s) {
+    protected String possiblyPadMessage(String s) {
         if (s.length() < this.MINIMUM_CHARACTERS_NEEDED) {
             return String.format("%1$-" + this.MINIMUM_CHARACTERS_NEEDED + "s", s);
         }

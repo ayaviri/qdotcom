@@ -147,11 +147,19 @@ public class PlayerState {
     // Removes the given list of tiles from this player's hand and returns the original hand
     // NOTE: Assumes that all elements of the given list are contained in this player's hand
     protected List<Tile> removeTiles(List<Tile> tiles) {
-        List<Tile> oldTiles = new ArrayList<Tile>(this.tiles);
-        for(Tile t : tiles) {
-            this.tiles.remove(t);
+        List<Tile> oldTiles = new ArrayList<>(this.tiles);
+
+        for (Tile tile : tiles) {
+            this.tiles.remove(tile);
         }
-//        this.tiles.removeAll(tiles);
+        return oldTiles;
+    }
+
+    // Removes all of the tiles from this player's hand and returns the removed tiles
+    protected List<Tile> removeAllTiles() {
+        List<Tile> oldTiles = new ArrayList<>(this.tiles);
+        this.tiles = new ArrayList<Tile>();
+
         return oldTiles;
     }
 

@@ -49,10 +49,7 @@ public class PlayerProxy implements IPlayer {
     }
 
     public TurnAction takeTurn(ActivePlayerInfo currentState) {
-        return this.communicateWithRemote(
-            new TakeTurn(this, currentState),
-            response -> TurnAction.fromJson(response)
-        );
+        return this.communicateWithRemote(new TakeTurn(this, currentState), response -> TurnAction.fromJson(response));
     }
 
     // NOTE: The closing of input and output streams is done in the referee, so this RemotePlayer
@@ -64,8 +61,7 @@ public class PlayerProxy implements IPlayer {
     // Serializes the given Player API function object into JSON, writes it to the output stream,
     // awaits a response on the input stream, and returns the validated + deserialized respsonse
     protected <T> T communicateWithRemote(JsonSerializable method, Function<JsonElement, T> deserializationFunction) {
-        JsonElement jsonArray = method.toJson();
-        this.writeOut(jsonArray);
+        this.writeOut(method.toJson());
 
         if (this.parserIn.hasNext()) {
             JsonElement response = this.parserIn.next();
@@ -84,8 +80,7 @@ public class PlayerProxy implements IPlayer {
         return String.format("{Player: %s}", this.name());
     }
 
-    @Override
-    public JsonElement toJson() {
+    @Override public JsonElement toJson() {
         return null;
     }
 }

@@ -14,7 +14,6 @@ import chen_ayaviri.map_representation.Tiles;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-// import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Iterator;
 import java.util.List;
@@ -27,11 +26,11 @@ public class RefereeProxy {
     private final JsonElement VOID_JSON_RESPONSE = new JsonPrimitive("void");
 
     public RefereeProxy(Socket serverSocket, IPlayer player) throws IOException {
+        this.player = player;
         this.writerOut = new JsonWriter(serverSocket.getOutputStream());
         this.parserIn = new JsonStreamParser(
             new InputStreamReader(serverSocket.getInputStream())
         );
-        this.player = player;
     }
 
     public void playToCompletion() {

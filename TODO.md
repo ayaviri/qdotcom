@@ -1,4 +1,5 @@
 # TODO
+- Figure out why the IPlayer interface has a toJson method
 - Populate README with project requirement and structure info (include diagrams of the static and dynamic interactions between components based on milestones)
 - Go through the scattered TODOs in repo
 - Please clean up JSON conversion utilities
@@ -21,3 +22,4 @@ the socket isn't closed until the end of the game, no JSON ever comes to the ref
 
 # Questions
 - A RoundResult has all of the information it needs to determine whether the round it summarises was a terminal round. Should the functionality to check that be in the RoundResult or Referee component ?
+- Should the client impose a time limit on a game each player plays ?

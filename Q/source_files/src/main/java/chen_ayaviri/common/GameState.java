@@ -184,12 +184,11 @@ public class GameState {
     }
 
     // Performs and scores the given action
-    // Updates the map and the score of the active player
-    // Advances the active player
-    // NOTE: must be called AFTER the legality is checked for the given action
+    // Updates this game state's map and the score of the active player
+    // NOTE: Must be called AFTER the legality is checked for the given action
     public TurnResult performCheckedTurnAction(TurnAction action) {
         TurnResult.Builder turnResultBuilder = new TurnResult.Builder(action);
-        action.performCheckedOn(this, this.players.getActivePlayerState(), turnResultBuilder);
+        action.performCheckedOn(this, turnResultBuilder);
         return turnResultBuilder.build();
     }
 
@@ -234,25 +233,24 @@ public class GameState {
     }
 
     // Exchanges the given player's tiles with referee tiles
-    protected void checkedExchangeActivePlayerTiles(PlayerState activePlayer, TurnResult.Builder turnResultBuilder) {
-        int tilesToRemove = activePlayer.getTileCount();
-        List<Tile> oldTiles = activePlayer.removeTiles(activePlayer.getTiles());
-        List<Tile> newTiles = this.removeFromRefereeAndAddToPlayer(tilesToRemove);
+    protected void checkedExchangeActivePlayerTiles(TurnResult.Builder turnResultBuilder) {
+        List<Tile> oldTiles = this.players.getActivePlayerState().removeAllTiles();
+        List<Tile> newTiles = this.removeFromRefereeAndAddToActive(oldTiles.size());
         refereeTiles.addAll(oldTiles);
 
         turnResultBuilder
             .newTiles(newTiles);
     }
 
-    // Removes each placed tile from the active player's hand, adds tiles back from refereeTiles if there are enough
-    protected void checkedPlaceActivePlayerTiles(PlayerState activePlayer,
-                                                 List<Placement> placements,
-                                                 TurnResult.Builder turnResultBuilder) {
-        int originalHandSize = activePlayer.getTileCount();
+    // Performs the given list of placements on this game state's map, removes the tiles in the given list of
+    // placements from the active player's hand, replaces those tiles from the referee pile, scores the placement,
+    // and populates the given TurnResult.Builder
+    protected void checkedPlaceActivePlayerTiles(List<Placement> placements, TurnResult.Builder turnResultBuilder) {
+        int originalHandSize = this.players.getActivePlayerState().getTileCount();
         this.placeTilesOnMap(placements);
-        activePlayer.removeTiles(Placements.getTiles(placements));
+        this.players.getActivePlayerState().removeTiles(Placements.getTiles(placements));
 
-        List<Tile> newTiles = this.removeFromRefereeAndAddToPlayer(placements.size());
+        List<Tile> newTiles = this.removeFromRefereeAndAddToActive(placements.size());
         this.scoreAndAddToActive(placements, originalHandSize);
 
         turnResultBuilder
@@ -291,7 +289,7 @@ public class GameState {
     // Places all the given placements onto the map
     // Assumes all placements are valid
     protected void placeTilesOnMap(List<Placement> placements) {
-        for(Placement placement : placements) {
+        for (Placement placement : placements) {
             this.map.placeTile(placement);
         }
     }
@@ -299,7 +297,7 @@ public class GameState {
     // Removes the minimum between the given placement size and the number of remaining
     // referee tiles, adds them to the active player, and returns the active player's
     // new entire hand
-    protected List<Tile> removeFromRefereeAndAddToPlayer(int numPlacements) {
+    protected List<Tile> removeFromRefereeAndAddToActive(int numPlacements) {
         int tilesToRemove = Math.min(numPlacements, this.getRemainingRefereeTiles());
         List<Tile> returnedTiles = this.removeFromRefereeTiles(tilesToRemove);
         this.players.getActivePlayerState().addTiles(returnedTiles);
@@ -444,8 +442,8 @@ public class GameState {
             return true;
         }
 
-        protected void performCheckedOn(GameState state, PlayerState activePlayer, TurnResult.Builder turnResultBuilder) {
-            // no side effects, active player is updated by performCheckedTurnAction
+        protected void performCheckedOn(GameState state, TurnResult.Builder turnResultBuilder) {
+            // There are no side effects with this action
         }
 
         public JsonElement toJson() {
@@ -470,8 +468,8 @@ public class GameState {
             return state.isExchangeActionLegal();
         }
 
-        protected void performCheckedOn(GameState state, PlayerState activePlayer, TurnResult.Builder turnResultBuilder) {
-            state.checkedExchangeActivePlayerTiles(activePlayer, turnResultBuilder);
+        protected void performCheckedOn(GameState state, TurnResult.Builder turnResultBuilder) {
+            state.checkedExchangeActivePlayerTiles(turnResultBuilder);
         }
 
         public JsonElement toJson() {
@@ -511,8 +509,8 @@ public class GameState {
             return state.isPlaceActionLegal(this.placements);
         }
 
-        protected void performCheckedOn(GameState state, PlayerState activePlayer, TurnResult.Builder turnResultBuilder) {
-            state.checkedPlaceActivePlayerTiles(activePlayer, this.placements, turnResultBuilder);
+        protected void performCheckedOn(GameState state, TurnResult.Builder turnResultBuilder) {
+            state.checkedPlaceActivePlayerTiles(this.placements, turnResultBuilder);
         }
 
         public List<Placement> getPlacements() {

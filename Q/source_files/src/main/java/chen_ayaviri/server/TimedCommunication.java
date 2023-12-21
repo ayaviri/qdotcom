@@ -22,6 +22,8 @@ public class TimedCommunication<T> {
         Supplier<Void> callbackAbsence = () -> { return null; };
         this.callable = builder.callable;
         this.timeoutInSeconds = builder.timeoutInSeconds;
+        // Java recognises the return values of the Optional fields as of type Object as 
+        // opposed to Supplier<Void>, so an explicit cast resolves compilation errors...
         this.failureCallback = (Supplier<Void>) builder.failureCallback.orElse(callbackAbsence);
         this.successCallback = (Supplier<Void>) builder.successCallback.orElse(callbackAbsence);
     }
