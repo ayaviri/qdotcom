@@ -2,16 +2,27 @@ package chen_ayaviri.common;
 
 // Represents a configuration that can turn on/off debugging output on the standard error port
 public abstract class ADebuggableConfig {
-    // A flag that is set to true when debugging output is desired on the standard error port
-    private boolean quiet = true;
+    private final boolean quiet;
+    private final DebuggingLogger logger;
 
-    public ADebuggableConfig() {}
+    // Creates a debuggable config that will NOT LOG
+    public ADebuggableConfig() {
+        this.quiet = false;
+        this.logger = new DebuggingLogger(!this.quiet);
+    }
 
+    // Creates a debuggable config with a logger that logs if the given _quiet_
+    // parameter is FALSE
     public ADebuggableConfig(boolean quiet) {
         this.quiet = quiet;
+        this.logger = new DebuggingLogger(!quiet);
     }
 
     public boolean isQuiet() {
         return this.quiet;
+    }
+
+    public DebuggingLogger getLogger() {
+        return this.logger;
     }
 }

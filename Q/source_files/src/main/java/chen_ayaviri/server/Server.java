@@ -4,6 +4,7 @@ import chen_ayaviri.player.IPlayer;
 import chen_ayaviri.referee.GameResult;
 import chen_ayaviri.referee.Referee;
 import chen_ayaviri.referee.RefereeConfig;
+import chen_ayaviri.common.DebuggingLogger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -18,6 +19,8 @@ public class Server {
     private final RefereeConfig refereeConfig;
     private final List<Closeable> openedSockets;
 
+    private final DebuggingLogger logger;
+
     private final int NUMBER_WAITING_ROUNDS;
     private final int WAITING_PERIOD_SECONDS;
     private final int NAME_SUBMISSION_PERIOD_SECONDS;
@@ -28,6 +31,7 @@ public class Server {
             
         this.refereeConfig = serverConfig.getRefereeConfig();
         this.openedSockets = new ArrayList<Closeable>(Arrays.asList(this.serverSocket));
+        this.logger = serverConfig.getLogger();
         this.NUMBER_WAITING_ROUNDS = serverConfig.getNumberOfWaitingRounds();
         this.WAITING_PERIOD_SECONDS = serverConfig.getWaitingPeriodInSeconds();
         this.NAME_SUBMISSION_PERIOD_SECONDS = serverConfig.getConfirmationPeriodInSeconds();
@@ -40,6 +44,8 @@ public class Server {
 
         // TODO: This constant ties the server and referee components... Can we avoid doing so ? If so, how ?
         if (this.hasEnoughPlayersForGame(players.size())) {
+            this.logger.println(String.format("Starting game with %s", players));
+
             Referee referee = new Referee(players, this.refereeConfig);
             gameResult = referee.playToCompletion();
         }
@@ -56,6 +62,8 @@ public class Server {
         List<IPlayer> players = new ArrayList<>();
 
         do {
+            this.logger.println("Starting waiting period");
+
             this.executeWaitingPeriod(players);
             waitingRoundsCompleted += 1;
         } while (this.canSignUpMorePlayers(players.size()) && this.canWaitAnotherRound(waitingRoundsCompleted));
@@ -67,7 +75,13 @@ public class Server {
     // during it
     protected void executeWaitingPeriod(List<IPlayer> players) {
         new TimedCommunication.Builder<>(
-            new WaitingPeriod(this.serverSocket, players, this.openedSockets, this.NAME_SUBMISSION_PERIOD_SECONDS),
+            new WaitingPeriod(
+                this.serverSocket, 
+                players, 
+                this.openedSockets, 
+                this.NAME_SUBMISSION_PERIOD_SECONDS, 
+                this.logger
+            ),
             this.WAITING_PERIOD_SECONDS
         ).build().attempt();
     }

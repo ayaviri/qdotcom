@@ -7,7 +7,6 @@ import java.net.Socket;
 
 import com.google.gson.JsonStreamParser;
 import com.google.gson.JsonElement;
-// import com.google.gson.stream.JsonReader;
 
 // NOTE: An alternative design could have been to make a new RemotePlayer subclass
 // that requests the name of a player remotely, has a serialisation function that returns

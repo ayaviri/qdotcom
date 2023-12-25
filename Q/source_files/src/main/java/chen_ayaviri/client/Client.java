@@ -1,7 +1,9 @@
 package chen_ayaviri.client;
 
 import com.google.gson.JsonPrimitive;
+
 import chen_ayaviri.player.IPlayer;
+import chen_ayaviri.common.DebuggingLogger;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -18,11 +20,14 @@ public class Client {
     private final int secondsBetweenSpawns;
     private final List<IPlayer> players;
 
+    private final DebuggingLogger logger;
+
     public Client(ClientConfig clientConfig) {
         this.serverHostName = clientConfig.getHostName();
         this.serverPortNumber = clientConfig.getPortNumber();
         this.secondsBetweenSpawns = clientConfig.getSecondsBetweenSpawns();
         this.players = clientConfig.getPlayers();
+        this.logger = clientConfig.getLogger();
     }
 
     public void registerClients() {
@@ -30,11 +35,16 @@ public class Client {
         ExecutorService executor = Executors.newFixedThreadPool(this.players.size());
 
         for (int index = 0; index < this.players.size(); index++) {
+            this.logger.println(String.format("Spawning player %s", this.players.get(index).name()));
+
             executor.execute(new PlayerSpawn(this.players.get(index), latch));
             this.possibleWaitBeforeNextSpawn(index);
         }
 
+        this.logger.println("All players spawned, waiting for completion of game");
+
         this.awaitCompletionOfPlayers(latch);
+        executor.shutdown();
     }
 
     // Sleeps the current thread _secondsBetweenSpawns_ seconds if the given index does 

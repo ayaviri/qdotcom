@@ -3,6 +3,7 @@ package chen_ayaviri.server;
 import chen_ayaviri.player.IPlayer;
 import chen_ayaviri.player.PlayerProxy;
 import chen_ayaviri.referee.Referee;
+import chen_ayaviri.common.DebuggingLogger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -23,13 +24,22 @@ public class WaitingPeriod implements Callable<Void> {
 
     private final int NAME_SUBMISSION_PERIOD_SECONDS; 
 
+    private final DebuggingLogger logger;
+
     // Constructs a new WaitingPeriod using the given socket to accept new connections and
     // the given list of players to accumulate them onto 
-    public WaitingPeriod(ServerSocket serverSocket, List<IPlayer> players, List<Closeable> openedSockets, int nameSubmissionPeriodSeconds) {
+    public WaitingPeriod(
+        ServerSocket serverSocket, 
+        List<IPlayer> players, 
+        List<Closeable> openedSockets, 
+        int nameSubmissionPeriodSeconds, 
+        DebuggingLogger logger
+    ) {
         this.serverSocket = serverSocket;
         this.players = players;
         this.openedSockets = openedSockets;
         this.NAME_SUBMISSION_PERIOD_SECONDS = nameSubmissionPeriodSeconds;
+        this.logger = logger;
     }
 
     public Void call() {
@@ -55,6 +65,9 @@ public class WaitingPeriod implements Callable<Void> {
     protected Optional<IPlayer> getNewPlayerProxy() {
         try {
             Socket playerSocket = this.serverSocket.accept();
+
+            this.logger.println("New player connection received");
+
             this.openedSockets.add(playerSocket);
             CommunicationResult<String> nameCommunicationResult = this.attemptToGetPlayerName(playerSocket);
 
@@ -82,6 +95,8 @@ public class WaitingPeriod implements Callable<Void> {
     // NOTE: Assumes that the CommunicationResult has succeeded
     protected Optional<IPlayer> constructNamedPlayerProxy(CommunicationResult<String> nameCommunicationResult, Socket playerSocket) {
         String name = nameCommunicationResult.returnValue().get();
+
+        this.logger.println(String.format("Player sign up successful, received name %s", name));
 
         try {
             return Optional.of(new PlayerProxy(name, playerSocket));

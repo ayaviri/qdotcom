@@ -14,6 +14,7 @@ import chen_ayaviri.map_representation.Tiles;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.net.Socket;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +24,7 @@ public class RefereeProxy {
     private final IPlayer player;
     private final JsonWriter writerOut;
     private final JsonStreamParser parserIn;
+    private final InputStream inputStream;
     private final JsonElement VOID_JSON_RESPONSE = new JsonPrimitive("void");
 
     public RefereeProxy(Socket serverSocket, IPlayer player) throws IOException {
@@ -31,6 +33,7 @@ public class RefereeProxy {
         this.parserIn = new JsonStreamParser(
             new InputStreamReader(serverSocket.getInputStream())
         );
+        this.inputStream = serverSocket.getInputStream();
     }
 
     public void playToCompletion() {
@@ -39,9 +42,6 @@ public class RefereeProxy {
             JsonElement responseJson = this.processRequest(requestJson);
             this.writeOut(responseJson);
         }
-
-        // TODO: do both streams need to be closed here ?
-        this.writerOut.close();
     }
 
     // Deserializes the given JSON request, sends it to this proxy's player, and

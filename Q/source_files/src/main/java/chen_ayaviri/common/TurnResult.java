@@ -57,4 +57,13 @@ public class TurnResult {
     public TurnAction getTurnAction() {
         return this.turnAction;
     }
+
+    public String toString() {
+        return String.format(
+            "<TurnResult - placedAllTiles: %s, newTiles: %s, turnAction: %s>", 
+            this.placedAllTiles, 
+            this.newTiles, 
+            this.turnAction
+        );
+    }
 }

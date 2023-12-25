@@ -5,6 +5,7 @@ import chen_ayaviri.common.GameState;
 import chen_ayaviri.common.PlayerState;
 import chen_ayaviri.common.TurnAction;
 import chen_ayaviri.common.TurnResult;
+import chen_ayaviri.common.DebuggingLogger;
 import chen_ayaviri.map_representation.Tile;
 import chen_ayaviri.player.IPlayer;
 import chen_ayaviri.player.Setup;
@@ -34,6 +35,8 @@ public class Referee {
     private final List<String> eliminatedPlayers; 
     private final List<IObserver> observers;
 
+    private final DebuggingLogger logger;
+
     // Creates a referee with a list of player proxy/name pairs and a configuration.
     // NOTE: Assumes each player has a unique name
     public Referee(List<IPlayer> players, RefereeConfig refereeConfig) {
@@ -51,6 +54,7 @@ public class Referee {
     // remaining parameters from the given configuration. Injects the given list of player proxies IF 
     // NON-EMPTY. OTHERWISE, assumes that the game state already contains these proxies
     private Referee(GameState initialState, RefereeConfig refereeConfig, List<IPlayer> players) {
+        this.logger = refereeConfig.getLogger();
         this.COMMUNICATION_TIMEOUT_SECONDS = refereeConfig.getPerTurnTimeout();
         this.eliminatedPlayers = new ArrayList<String>();
         this.observers = new ArrayList<IObserver>();
@@ -98,7 +102,11 @@ public class Referee {
             if (this.hasTurnAction(potentialTurnResult)) {
                 TurnResult turnResult = potentialTurnResult.get();
 
+                this.logger.println(String.format("Is this turn a terminal turn: %s", turnResult));
+
                 if (this.isTerminalTurn(turnResult)) {
+                    this.logger.println("Previous turn resulted in the end of the game");
+
                     hadGameEndingTurn = true;
                     break;
                 } else {
@@ -116,6 +124,9 @@ public class Referee {
         this.sendStateToObservers();
         ActivePlayerInfo activePlayerInfo = this.gameState.getInfoForActivePlayer();
         PlayerState activePlayerState = activePlayerInfo.getPlayerState();
+
+        this.logger.println(String.format("It's %s's turn", activePlayerState.getName()));
+
         CommunicationResult<TurnAction> turnActionCommunication = this.attemptTimedCommunication(
             new TakeTurn(activePlayerState.getProxy(), activePlayerInfo),
             activePlayerState.getName()
@@ -129,6 +140,8 @@ public class Referee {
 
             return Optional.of(turnResult);
         } else {
+            this.logger.println(String.format("Could not retrieve %s's turn action, they will be eliminated", activePlayerState.getName()));
+
             return Optional.empty();
         }
     }
@@ -136,10 +149,14 @@ public class Referee {
     // Plays the given turn action for the given active player and 
     // returns its result, checking the legality of the turn before doing so
     protected TurnResult playTurnWithAction(TurnAction turnAction, PlayerState activePlayerState)  {
+        this.logger.println(String.format("%s responded with the following turn action: %s", activePlayerState.getName(), turnAction));
+
         if (this.gameState.checkLegalityOf(turnAction)) {
             TurnResult turnResult = this.playLegalTurnWithAction(turnAction, activePlayerState);
             return turnResult;
         } else {
+            this.logger.println(String.format("An illegal move was played, %s will be eliminated", activePlayerState.getName()));
+
             this.eliminatePlayer(activePlayerState.getName());
             return new TurnResult.Builder(turnAction).build();
         }
@@ -152,6 +169,8 @@ public class Referee {
         TurnResult turnResult = this.gameState.performCheckedTurnAction(turnAction);
 
         if (!this.isTerminalTurn(turnResult)) {
+            this.logger.println(String.format("Turn action was successful and does not end the game by itself, giving %s their new tiles", activePlayerState.getName()));
+
             // TODO: The specification does not seem to suggest that a player that performs a pass action
             // gets their NewTiles method called
             this.attemptTimedCommunicationWithReward(
@@ -231,14 +250,18 @@ public class Referee {
     // lost, and returns the list of their names
     protected List<String> alertPlayersOfFinalStatus() {
         List<String> winners = this.determineWinningPlayers();
+
+        this.logger.println(String.format("Winners before telling them: %s", winners));
        
         for (PlayerState playerState : this.gameState.getPlayerStates()) {
             boolean isWinner = winners.contains(playerState.getName());
             CommunicationResult<Void> winCommunication = this.attemptTimedCommunicationWithPunishment(
                 new Win(playerState.getProxy(), isWinner), 
-                new WinnerRemovalPunishment(winners, playerState.getName())
+                new MisbehavedFinisherPunishment(this, winners, playerState.getName())
             );
         }
+
+        this.logger.println(String.format("Winners after telling them: %s", winners));
 
         return winners;
     }
