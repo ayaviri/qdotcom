@@ -1,16 +1,15 @@
-package chen_ayaviri.referee;
+package ayaviri.referee;
 
-import chen_ayaviri.common.GameState;
-import chen_ayaviri.common.QMap;
-import chen_ayaviri.map_representation.Posn;
-import chen_ayaviri.map_representation.Tile;
-import chen_ayaviri.map_representation.Placement;
-import chen_ayaviri.player.IPlayer;
-import chen_ayaviri.player.LocalPlayer;
-import chen_ayaviri.strategy.DAG;
-import org.junit.Before;
-
+import ayaviri.common.GameState;
+import ayaviri.common.QMap;
+import ayaviri.map_representation.Placement;
+import ayaviri.map_representation.Posn;
+import ayaviri.map_representation.Tile;
+import ayaviri.player.IPlayer;
+import ayaviri.player.LocalPlayer;
+import ayaviri.strategy.DAG;
 import java.util.*;
+import org.junit.Before;
 
 public class ObserverTest {
     GameState gameState;
@@ -70,8 +69,11 @@ public class ObserverTest {
         IPlayer player3 = new LocalPlayer(player3Name, new DAG());
 
         playerTiles = new HashMap<String, List<Tile>>();
-        playerTiles.put(player2Name, new ArrayList<Tile>(Arrays.asList(redStar, blue8Star, purpleSquare, redCircle)));
-        playerTiles.put(player3Name, new ArrayList<Tile>(Arrays.asList(yellowStar, redCircle, redStar)));
+        playerTiles.put(
+                player2Name,
+                new ArrayList<Tile>(Arrays.asList(redStar, blue8Star, purpleSquare, redCircle)));
+        playerTiles.put(
+                player3Name, new ArrayList<Tile>(Arrays.asList(yellowStar, redCircle, redStar)));
         playerTiles.put(player1Name, new ArrayList<Tile>(Arrays.asList(purpleSquare, orange8Star)));
 
         players = new ArrayList<>();
@@ -79,7 +81,9 @@ public class ObserverTest {
         players.add(player3);
         players.add(player1);
 
-        refereeTiles = new ArrayList<Tile>(Arrays.asList(greenCircle, orange8Star, purpleSquare, red8Star, blueStar));
+        refereeTiles =
+                new ArrayList<Tile>(
+                        Arrays.asList(greenCircle, orange8Star, purpleSquare, red8Star, blueStar));
 
         map = new QMap(redStar);
         map.placeTile(new Placement(red8Star, new Posn(0, 1)));

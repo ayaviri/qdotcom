@@ -1,23 +1,18 @@
-package chen_ayaviri.referee;
-
-import chen_ayaviri.common.GameState;
-import chen_ayaviri.common.QMap;
-import chen_ayaviri.map_representation.Tile;
-import chen_ayaviri.player.*;
-import chen_ayaviri.player.cheaters.*;
-import chen_ayaviri.player.communication_failures.NewTilesCommFailurePlayer;
-import chen_ayaviri.player.communication_failures.SetupCommFailurePlayer;
-import chen_ayaviri.player.communication_failures.TakeTurnCommFailurePlayer;
-import chen_ayaviri.player.communication_failures.WinCommFailurePlayer;
-import chen_ayaviri.strategy.DAG;
-import chen_ayaviri.strategy.ExchangeStrategy;
-import chen_ayaviri.strategy.LDASG;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.*;
+package ayaviri.referee;
 
 import static org.junit.Assert.*;
+
+import ayaviri.common.GameState;
+import ayaviri.common.QMap;
+import ayaviri.map_representation.Tile;
+import ayaviri.player.*;
+import ayaviri.player.cheaters.*;
+import ayaviri.player.communication_failures.NewTilesCommFailurePlayer;
+import ayaviri.strategy.DAG;
+import ayaviri.strategy.LDASG;
+import java.util.*;
+import org.junit.Before;
+import org.junit.Test;
 
 public class RefereeTest {
     GameState gameState;
@@ -84,7 +79,8 @@ public class RefereeTest {
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -102,7 +98,8 @@ public class RefereeTest {
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -113,13 +110,15 @@ public class RefereeTest {
     //     players.add(player1);
     //     playerTiles.put("eliminated", new ArrayList<>(Arrays.asList(orangeStar)));
     //     playerTiles.put("player1", new ArrayList<>(Arrays.asList(blueStar)));
-    //     gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(yellowCircle)));
+    //     gameState = new GameState(players, playerTiles, map, new
+    // ArrayList<>(Arrays.asList(yellowCircle)));
 
     //     Referee referee = new Referee(gameState);
 
     //     GameResult gameResult = referee.playToCompletion();
 
-    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")), gameResult.getWinningPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")),
+    // gameResult.getWinningPlayers());
     //     assertEquals(new ArrayList<>(), gameResult.getEliminatedPlayers());
     // }
 
@@ -138,7 +137,8 @@ public class RefereeTest {
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -156,7 +156,8 @@ public class RefereeTest {
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -174,7 +175,8 @@ public class RefereeTest {
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -192,7 +194,8 @@ public class RefereeTest {
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -210,7 +213,8 @@ public class RefereeTest {
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated1", "eliminated2")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("eliminated1", "eliminated2")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -239,32 +243,41 @@ public class RefereeTest {
         players.add(player1);
         players.add(player2);
         players.add(player3);
-        playerTiles.put("player1", new ArrayList<>(Arrays.asList(yellowCircle, greenCircle, blueSquare, purpleSquare)));
+        playerTiles.put(
+                "player1",
+                new ArrayList<>(
+                        Arrays.asList(yellowCircle, greenCircle, blueSquare, purpleSquare)));
         playerTiles.put("eliminated", new ArrayList<>(Arrays.asList(orangeStar, greenCircle)));
         playerTiles.put("player3", new ArrayList<>(Arrays.asList(purpleSquare)));
-        gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blue8Star, greenStar)));
+        gameState =
+                new GameState(
+                        players,
+                        playerTiles,
+                        map,
+                        new ArrayList<>(Arrays.asList(blue8Star, greenStar)));
 
         /*
-            ref tiles: blue8Star, greenStar
+           ref tiles: blue8Star, greenStar
 
-            round 1:
-            player1 - pass
-            player2 - place, receive blue8Star, new tiles exn
-            player3 - exchange, receive greenStar
+           round 1:
+           player1 - pass
+           player2 - place, receive blue8Star, new tiles exn
+           player3 - exchange, receive greenStar
 
-            ref tiles: [empty]
+           ref tiles: [empty]
 
-            round 2:
-            player1 - pass
-            player3 - place, end game, win
-         */
+           round 2:
+           player1 - pass
+           player3 - place, end game, win
+        */
 
         Referee referee = new Referee(gameState);
 
         GameResult gameResult = referee.playToCompletion();
 
         assertEquals(new ArrayList<>(Arrays.asList("player3")), gameResult.getWinningPlayers());
-        assertEquals(new ArrayList<>(Arrays.asList("eliminated")), gameResult.getEliminatedPlayers());
+        assertEquals(
+                new ArrayList<>(Arrays.asList("eliminated")), gameResult.getEliminatedPlayers());
     }
 
     // @Test
@@ -275,14 +288,15 @@ public class RefereeTest {
     //     players.add(player2);
     //     playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
     //     playerTiles.put("player2", new ArrayList<>(Arrays.asList(orange8Star, greenCircle)));
-    //     gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
-
+    //     gameState = new GameState(players, playerTiles, map, new
+    // ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
     //     Referee referee = new Referee(gameState);
 
     //     GameResult gameResult = referee.playToCompletion();
 
-    //     assertEquals(new ArrayList<>(Arrays.asList("player1", "player2")), gameResult.getWinningPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("player1", "player2")),
+    // gameResult.getWinningPlayers());
     //     assertEquals(new ArrayList<>(), gameResult.getEliminatedPlayers());
     // }
 
@@ -294,15 +308,16 @@ public class RefereeTest {
     //     players.add(player1);
     //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(orange8Star, greenCircle)));
     //     playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-    //     gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
-
+    //     gameState = new GameState(players, playerTiles, map, new
+    // ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
     //     Referee referee = new Referee(gameState);
 
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -313,15 +328,16 @@ public class RefereeTest {
     //     players.add(player1);
     //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(orange8Star, greenCircle)));
     //     playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-    //     gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
-
+    //     gameState = new GameState(players, playerTiles, map, new
+    // ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
     //     Referee referee = new Referee(gameState);
 
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua")),
+    // gameResult.getEliminatedPlayers());
     // }
     // @Test
     // public void testNotALinePlayer() {
@@ -331,15 +347,16 @@ public class RefereeTest {
     //     players.add(player1);
     //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueStar, yellowStar)));
     //     playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-    //     gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
-
+    //     gameState = new GameState(players, playerTiles, map, new
+    // ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
     //     Referee referee = new Referee(gameState);
 
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -348,17 +365,19 @@ public class RefereeTest {
     //     IPlayer player1 = new LocalPlayer("player1", new DAG());
     //     players.add(p);
     //     players.add(player1);
-    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(orange8Star, greenCircle, greenCircle, greenCircle)));
+    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(orange8Star, greenCircle,
+    // greenCircle, greenCircle)));
     //     playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-    //     gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
-
+    //     gameState = new GameState(players, playerTiles, map, new
+    // ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
     //     Referee referee = new Referee(gameState);
 
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -367,17 +386,19 @@ public class RefereeTest {
     //     IPlayer player1 = new LocalPlayer("player1", new DAG());
     //     players.add(p);
     //     players.add(player1);
-    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(redStar, greenCircle, greenCircle, greenCircle)));
+    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(redStar, greenCircle,
+    // greenCircle, greenCircle)));
     //     playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-    //     gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
-
+    //     gameState = new GameState(players, playerTiles, map, new
+    // ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
     //     Referee referee = new Referee(gameState);
 
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -386,17 +407,19 @@ public class RefereeTest {
     //     BadAskForTilePlayer player1 = new BadAskForTilePlayer("player1", new DAG());
     //     players.add(p);
     //     players.add(player1);
-    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
+    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle,
+    // greenCircle, greenCircle)));
     //     playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-    //     gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
-
+    //     gameState = new GameState(players, playerTiles, map, new
+    // ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
     //     Referee referee = new Referee(gameState);
 
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -407,18 +430,20 @@ public class RefereeTest {
     //     players.add(p);
     //     players.add(k);
     //     players.add(player1);
-    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
+    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle,
+    // greenCircle, greenCircle)));
     //     playerTiles.put("k", new ArrayList<>(Arrays.asList(redStar, greenCircle, yellowCircle)));
     //     playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-    //     gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
-
+    //     gameState = new GameState(players, playerTiles, map, new
+    // ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
     //     Referee referee = new Referee(gameState);
 
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua", "k")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua", "k")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -431,19 +456,23 @@ public class RefereeTest {
     //     players.add(p);
     //     players.add(k);
     //     players.add(player1);
-    //     playerTiles.put("goodplayer", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
-    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
+    //     playerTiles.put("goodplayer", new ArrayList<>(Arrays.asList(blueSquare, redStar,
+    // greenCircle, greenCircle, greenCircle)));
+    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle,
+    // greenCircle, greenCircle)));
     //     playerTiles.put("k", new ArrayList<>(Arrays.asList(redStar, greenCircle, yellowCircle)));
     //     playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-    //     gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
-
+    //     gameState = new GameState(players, playerTiles, map, new
+    // ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
     //     Referee referee = new Referee(gameState);
 
     //     GameResult gameResult = referee.playToCompletion();
 
-    //     assertEquals(new ArrayList<>(Arrays.asList("goodplayer")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua", "k")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("goodplayer")),
+    // gameResult.getWinningPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("Joshua", "k")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -458,19 +487,23 @@ public class RefereeTest {
     //     players.add(p);
     //     players.add(k);
     //     players.add(player1);
-    //     playerTiles.put("goodplayer", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
+    //     playerTiles.put("goodplayer", new ArrayList<>(Arrays.asList(blueSquare, redStar,
+    // greenCircle, greenCircle, greenCircle)));
     //     playerTiles.put("ttexn", new ArrayList<>(Arrays.asList(redStar)));
-    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
+    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle,
+    // greenCircle, greenCircle)));
     //     playerTiles.put("k", new ArrayList<>(Arrays.asList(redStar, greenCircle, yellowCircle)));
     //     playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-    //     gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
+    //     gameState = new GameState(players, playerTiles, map, new
+    // ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
     //     Referee referee = new Referee(gameState);
 
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("player1")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("ttexn","Joshua", "k")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("ttexn","Joshua", "k")),
+    // gameResult.getEliminatedPlayers());
     // }
 
     // @Test
@@ -487,19 +520,25 @@ public class RefereeTest {
     //     players.add(nofitp);
     //     players.add(player1);
     //     players.add(mcldasg);
-    //     playerTiles.put("goodplayer", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
+    //     playerTiles.put("goodplayer", new ArrayList<>(Arrays.asList(blueSquare, redStar,
+    // greenCircle, greenCircle, greenCircle)));
     //     playerTiles.put("ttexn", new ArrayList<>(Arrays.asList(redStar)));
-    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, greenCircle, greenCircle)));
-    //     playerTiles.put("nofitp", new ArrayList<>(Arrays.asList(redStar, greenCircle, yellowCircle)));
+    //     playerTiles.put("Joshua", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle,
+    // greenCircle, greenCircle)));
+    //     playerTiles.put("nofitp", new ArrayList<>(Arrays.asList(redStar, greenCircle,
+    // yellowCircle)));
     //     playerTiles.put("player1", new ArrayList<>(Arrays.asList(greenCircle, yellowCircle)));
-    //     playerTiles.put("mcldasg", new ArrayList<>(Arrays.asList(blueSquare, redStar, greenCircle, redStar, greenCircle, yellowCircle)));
-    //     gameState = new GameState(players, playerTiles, map, new ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
+    //     playerTiles.put("mcldasg", new ArrayList<>(Arrays.asList(blueSquare, redStar,
+    // greenCircle, redStar, greenCircle, yellowCircle)));
+    //     gameState = new GameState(players, playerTiles, map, new
+    // ArrayList<>(Arrays.asList(blueSquare, purpleSquare)));
 
     //     Referee referee = new Referee(gameState);
 
     //     GameResult gameResult = referee.playToCompletion();
 
     //     assertEquals(new ArrayList<>(Arrays.asList("mcldasg")), gameResult.getWinningPlayers());
-    //     assertEquals(new ArrayList<>(Arrays.asList("ttexn","Joshua", "nofitp")), gameResult.getEliminatedPlayers());
+    //     assertEquals(new ArrayList<>(Arrays.asList("ttexn","Joshua", "nofitp")),
+    // gameResult.getEliminatedPlayers());
     // }
 }

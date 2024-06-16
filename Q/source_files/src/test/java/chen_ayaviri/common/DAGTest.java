@@ -1,21 +1,20 @@
-package chen_ayaviri.common;
+package ayaviri.common;
 
-import chen_ayaviri.common.GameState.ExchangeAction;
-import chen_ayaviri.common.GameState.PassAction;
-import chen_ayaviri.common.GameState.PlaceAction;
-import chen_ayaviri.map_representation.Placement;
-import chen_ayaviri.strategy.ADAG;
-import chen_ayaviri.strategy.DAG;
-import chen_ayaviri.map_representation.Tile;
-import chen_ayaviri.map_representation.Posn;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
+import ayaviri.common.GameState.ExchangeAction;
+import ayaviri.common.GameState.PassAction;
+import ayaviri.common.GameState.PlaceAction;
+import ayaviri.map_representation.Placement;
+import ayaviri.map_representation.Posn;
+import ayaviri.map_representation.Tile;
+import ayaviri.strategy.ADAG;
+import ayaviri.strategy.DAG;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DAGTest {
     private ADAG strategy;
@@ -71,7 +70,9 @@ public class DAGTest {
         tiles.add(blueCircle);
         tiles.add(greenCircle);
 
-        ActivePlayerInfo state = new ActivePlayerInfo(map, new PlayerState(null, "", tiles, 0), 2, new ArrayList<>());
+        ActivePlayerInfo state =
+                new ActivePlayerInfo(
+                        map, new PlayerState(null, "", tiles, 0), 2, new ArrayList<>());
 
         assertEquals(new PassAction(), strategy.computeTurnAction(state));
     }
@@ -82,7 +83,9 @@ public class DAGTest {
         tiles.add(purpleSquare);
         tiles.add(blueCircle);
 
-        ActivePlayerInfo state = new ActivePlayerInfo(map, new PlayerState(null, "", tiles, 0), 2, new ArrayList<>());
+        ActivePlayerInfo state =
+                new ActivePlayerInfo(
+                        map, new PlayerState(null, "", tiles, 0), 2, new ArrayList<>());
 
         assertEquals(new ExchangeAction(), strategy.computeTurnAction(state));
     }
@@ -93,18 +96,22 @@ public class DAGTest {
         tiles.add(red8Star);
         tiles.add(redCircle);
 
-        ActivePlayerInfo state = new ActivePlayerInfo(map, new PlayerState(null, "", tiles, 0), 2, new ArrayList<>());
+        ActivePlayerInfo state =
+                new ActivePlayerInfo(
+                        map, new PlayerState(null, "", tiles, 0), 2, new ArrayList<>());
 
-        List<Placement> expectedPlacements = new ArrayList<Placement>(Arrays.asList(
-                        new Placement(red8Star, new Posn(0, -1)),
-                        new Placement(redCircle, new Posn(0, -2))
-                    ));
+        List<Placement> expectedPlacements =
+                new ArrayList<Placement>(
+                        Arrays.asList(
+                                new Placement(red8Star, new Posn(0, -1)),
+                                new Placement(redCircle, new Posn(0, -2))));
         PlaceAction.Builder placeActionBuilder = new PlaceAction.Builder();
         for (Placement placement : expectedPlacements) {
             placeActionBuilder.addPlacement(placement);
         }
 
-        assertEquals(placeActionBuilder.tryBuild().get(), strategy.computeIteratedTurnAction(state));
+        assertEquals(
+                placeActionBuilder.tryBuild().get(), strategy.computeIteratedTurnAction(state));
     }
 
     @Test
@@ -115,39 +122,45 @@ public class DAGTest {
         tiles.add(redStar);
         tiles.add(red8Star);
 
-        ActivePlayerInfo state = new ActivePlayerInfo(map, new PlayerState(null, "", tiles, 0), 2, new ArrayList<>());
+        ActivePlayerInfo state =
+                new ActivePlayerInfo(
+                        map, new PlayerState(null, "", tiles, 0), 2, new ArrayList<>());
 
-        List<Placement> expectedPlacements = new ArrayList<Placement>(Arrays.asList(
-                new Placement(redStar, new Posn(0, -1)),
-                new Placement(red8Star, new Posn(0, -2)),
-                new Placement(yellowCircle, new Posn(-1, 0))
-        ));
+        List<Placement> expectedPlacements =
+                new ArrayList<Placement>(
+                        Arrays.asList(
+                                new Placement(redStar, new Posn(0, -1)),
+                                new Placement(red8Star, new Posn(0, -2)),
+                                new Placement(yellowCircle, new Posn(-1, 0))));
         PlaceAction.Builder placeActionBuilder = new PlaceAction.Builder();
         for (Placement placement : expectedPlacements) {
             placeActionBuilder.addPlacement(placement);
         }
 
-        assertEquals(placeActionBuilder.tryBuild().get(), strategy.computeIteratedTurnAction(state));
+        assertEquals(
+                placeActionBuilder.tryBuild().get(), strategy.computeIteratedTurnAction(state));
     }
 
     @Test
     public void testMostNeighborsPlacement() {
         List<Tile> tiles = new ArrayList<>();
         map = new QMap(redStar);
-        map.placeTile(new Placement(orangeStar, new Posn(1,0)));
-        map.placeTile(new Placement(orange8Star, new Posn(1,1)));
+        map.placeTile(new Placement(orangeStar, new Posn(1, 0)));
+        map.placeTile(new Placement(orange8Star, new Posn(1, 1)));
         tiles.add(red8Star);
 
-        ActivePlayerInfo state = new ActivePlayerInfo(map, new PlayerState(null, "", tiles, 0), 2, new ArrayList<>());
+        ActivePlayerInfo state =
+                new ActivePlayerInfo(
+                        map, new PlayerState(null, "", tiles, 0), 2, new ArrayList<>());
 
-        List<Placement> expectedPlacements = new ArrayList<Placement>(Arrays.asList(
-                new Placement(red8Star, new Posn(0, -1))
-        ));
+        List<Placement> expectedPlacements =
+                new ArrayList<Placement>(Arrays.asList(new Placement(red8Star, new Posn(0, -1))));
         PlaceAction.Builder placeActionBuilder = new PlaceAction.Builder();
         for (Placement placement : expectedPlacements) {
             placeActionBuilder.addPlacement(placement);
         }
 
-        assertEquals(placeActionBuilder.tryBuild().get(), strategy.computeIteratedTurnAction(state));
+        assertEquals(
+                placeActionBuilder.tryBuild().get(), strategy.computeIteratedTurnAction(state));
     }
 }

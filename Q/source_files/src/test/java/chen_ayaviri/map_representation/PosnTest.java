@@ -1,12 +1,11 @@
-package chen_ayaviri.map_representation;
+package ayaviri.map_representation;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 public class PosnTest {
     private Posn posn0;
@@ -17,7 +16,7 @@ public class PosnTest {
     @Before
     public void setUp() {
         posn0 = new Posn(0, 0);
-        posn0A = new Posn(0,0);
+        posn0A = new Posn(0, 0);
         posn1 = new Posn(0, 1);
         posn2 = new Posn(1, 0);
     }
@@ -112,10 +111,9 @@ public class PosnTest {
 
         // transitivity
         assertTrue(
-                posn0.equals(posn0A) &&
-                        posn0A.equals(new Posn(0,0)) &&
-                        posn0.equals(new Posn(0,0))
-        );
+                posn0.equals(posn0A)
+                        && posn0A.equals(new Posn(0, 0))
+                        && posn0.equals(new Posn(0, 0)));
 
         // negation
         assertFalse(posn0.equals(posn1));
@@ -131,10 +129,9 @@ public class PosnTest {
 
         // transitivity
         assertTrue(
-                posn0.hashCode() == posn0A.hashCode() &&
-                        posn0A.hashCode() == new Posn(0, 0).hashCode() &&
-                        posn0.hashCode() == new Posn(0, 0).hashCode()
-        );
+                posn0.hashCode() == posn0A.hashCode()
+                        && posn0A.hashCode() == new Posn(0, 0).hashCode()
+                        && posn0.hashCode() == new Posn(0, 0).hashCode());
 
         // negation
         assertFalse(posn0.hashCode() == posn1.hashCode());

@@ -123,7 +123,6 @@ def runTaskAsynchronously(command: str, input: str) -> asyncio.Task:
 # waiting for the completion of both tasks, and returning the results of both
 # the server and the client as a two element array of strings in that order
 async def executeServerAndClient(test: TestTriplet) -> list[str]:
-    print(test)
     portNumber = 50000
     serverTask = runTaskAsynchronously(["./xserver", f"{portNumber}"], test.getServerConfigAsString())
     await asyncio.sleep(2)

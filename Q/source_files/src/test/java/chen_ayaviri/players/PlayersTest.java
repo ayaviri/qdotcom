@@ -1,4 +1,4 @@
-package chen_ayaviri.players;
+package ayaviri.players;
 
 import org.junit.Test;
 

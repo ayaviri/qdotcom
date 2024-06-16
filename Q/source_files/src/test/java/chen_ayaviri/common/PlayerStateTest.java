@@ -1,16 +1,15 @@
-package chen_ayaviri.common;
-
-import chen_ayaviri.map_representation.Tile;
-import chen_ayaviri.player.LocalPlayer;
-import chen_ayaviri.strategy.DAG;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
+package ayaviri.common;
 
 import static org.junit.Assert.*;
+
+import ayaviri.map_representation.Tile;
+import ayaviri.player.LocalPlayer;
+import ayaviri.strategy.DAG;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
 
 public class PlayerStateTest {
     private PlayerState playerState1;
@@ -22,7 +21,8 @@ public class PlayerStateTest {
         player1Tiles.add(new Tile("orange", "8star"));
         player1Tiles.add(new Tile("yellow", "diamond"));
 
-        playerState1 = new PlayerState(new LocalPlayer("player1", new DAG()), "player1", player1Tiles);
+        playerState1 =
+                new PlayerState(new LocalPlayer("player1", new DAG()), "player1", player1Tiles);
     }
 
     @Test
