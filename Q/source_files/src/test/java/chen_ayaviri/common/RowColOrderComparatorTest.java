@@ -1,12 +1,11 @@
-package chen_ayaviri.common;
-
-import chen_ayaviri.map_representation.Posn;
-
-import chen_ayaviri.map_representation.RowColOrderComparator;
-import org.junit.Before;
-import org.junit.Test;
+package ayaviri.common;
 
 import static org.junit.Assert.*;
+
+import ayaviri.map_representation.Posn;
+import ayaviri.map_representation.RowColOrderComparator;
+import org.junit.Before;
+import org.junit.Test;
 
 public class RowColOrderComparatorTest {
     RowColOrderComparator comparator;

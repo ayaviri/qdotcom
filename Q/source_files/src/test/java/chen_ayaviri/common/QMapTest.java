@@ -1,15 +1,13 @@
-package chen_ayaviri.common;
-
-import chen_ayaviri.map_representation.Tile;
-import chen_ayaviri.map_representation.Posn;
-import chen_ayaviri.map_representation.Placement;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.*;
+package ayaviri.common;
 
 import static org.junit.Assert.*;
+
+import ayaviri.map_representation.Placement;
+import ayaviri.map_representation.Posn;
+import ayaviri.map_representation.Tile;
+import java.util.*;
+import org.junit.Before;
+import org.junit.Test;
 
 public class QMapTest {
     private Tile refereeTile;
@@ -61,7 +59,11 @@ public class QMapTest {
             testMap.placeTile(new Placement(validTile, invalidPos));
             fail("Missing exception");
         } catch (RuntimeException e) {
-            assertEquals(String.format("Placement of tile %s at position %s is invalid", validTile, invalidPos), e.getMessage());
+            assertEquals(
+                    String.format(
+                            "Placement of tile %s at position %s is invalid",
+                            validTile, invalidPos),
+                    e.getMessage());
         }
     }
 
@@ -74,7 +76,11 @@ public class QMapTest {
             testMap.placeTile(new Placement(validTile, invalidPos));
             fail("Missing exception");
         } catch (RuntimeException e) {
-            assertEquals(String.format("Placement of tile %s at position %s is invalid", validTile, invalidPos), e.getMessage());
+            assertEquals(
+                    String.format(
+                            "Placement of tile %s at position %s is invalid",
+                            validTile, invalidPos),
+                    e.getMessage());
         }
     }
 
@@ -90,9 +96,9 @@ public class QMapTest {
         testSet.add(new Posn(0, 2));
         testSet.add(new Posn(1, 2));
 
-        testMap.placeTile(new Placement(new Tile("red", "8star"), new Posn(0,1)));
-        testMap.placeTile(new Placement(new Tile("orange", "8star"), new Posn(1,1)));
-        testMap.placeTile(new Placement(new Tile("blue", "square"), new Posn(0,-1)));
+        testMap.placeTile(new Placement(new Tile("red", "8star"), new Posn(0, 1)));
+        testMap.placeTile(new Placement(new Tile("orange", "8star"), new Posn(1, 1)));
+        testMap.placeTile(new Placement(new Tile("blue", "square"), new Posn(0, -1)));
 
         assertEquals(testSet, testMap.getValidTilePositions(new Tile("blue", "8star")));
     }
@@ -106,17 +112,14 @@ public class QMapTest {
         testSet.add(new Posn(1, 3));
         testSet.add(new Posn(3, 1));
 
-        testMap.placeTile(new Placement(new Tile("blue", "square"), new Posn(0,1)));
-        testMap.placeTile(new Placement(new Tile("red", "square"), new Posn(0,2)));
-        testMap.placeTile(new Placement(new Tile("red", "diamond"), new Posn(1,0)));
-        testMap.placeTile(new Placement(new Tile("red", "square"), new Posn(2,0)));
-        testMap.placeTile(new Placement(new Tile("red", "diamond"), new Posn(1,2)));
-        testMap.placeTile(new Placement(new Tile("red", "square"), new Posn(2,2)));
-        testMap.placeTile(new Placement(new Tile("blue", "diamond"), new Posn(2,1)));
+        testMap.placeTile(new Placement(new Tile("blue", "square"), new Posn(0, 1)));
+        testMap.placeTile(new Placement(new Tile("red", "square"), new Posn(0, 2)));
+        testMap.placeTile(new Placement(new Tile("red", "diamond"), new Posn(1, 0)));
+        testMap.placeTile(new Placement(new Tile("red", "square"), new Posn(2, 0)));
+        testMap.placeTile(new Placement(new Tile("red", "diamond"), new Posn(1, 2)));
+        testMap.placeTile(new Placement(new Tile("red", "square"), new Posn(2, 2)));
+        testMap.placeTile(new Placement(new Tile("blue", "diamond"), new Posn(2, 1)));
 
         assertEquals(testSet, testMap.getValidTilePositions(new Tile("blue", "diamond")));
     }
-
-
-
 }

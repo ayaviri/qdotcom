@@ -1,12 +1,11 @@
-package chen_ayaviri.map_representation;
-
-import chen_ayaviri.map_representation.shapes.Star;
-import chen_ayaviri.map_representation.shapes.Square;
-
-import org.junit.Before;
-import org.junit.Test;
+package ayaviri.map_representation;
 
 import static org.junit.Assert.*;
+
+import ayaviri.map_representation.shapes.Square;
+import ayaviri.map_representation.shapes.Star;
+import org.junit.Before;
+import org.junit.Test;
 
 public class TileTest {
     private Tile redStar;
@@ -54,10 +53,9 @@ public class TileTest {
 
         // transitivity
         assertTrue(
-                redStar.equals(redStar2) &&
-                        redStar2.equals(new Tile("red", "star")) &&
-                        redStar.equals(new Tile("red", "star"))
-        );
+                redStar.equals(redStar2)
+                        && redStar2.equals(new Tile("red", "star"))
+                        && redStar.equals(new Tile("red", "star")));
 
         // negation
         assertNotEquals(redStar, blueSquare);
@@ -69,14 +67,15 @@ public class TileTest {
         assertEquals(redStar.hashCode(), redStar.hashCode());
 
         // symmetry
-        assertTrue(redStar.hashCode() == redStar2.hashCode() && redStar2.hashCode() == redStar.hashCode());
+        assertTrue(
+                redStar.hashCode() == redStar2.hashCode()
+                        && redStar2.hashCode() == redStar.hashCode());
 
         // transitivity
         assertTrue(
-                redStar.hashCode() == redStar2.hashCode() &&
-                        redStar2.hashCode() == new Tile("red", "star").hashCode() &&
-                        redStar.hashCode() == new Tile("red", "star").hashCode()
-        );
+                redStar.hashCode() == redStar2.hashCode()
+                        && redStar2.hashCode() == new Tile("red", "star").hashCode()
+                        && redStar.hashCode() == new Tile("red", "star").hashCode());
 
         // negation
         assertFalse(redStar.hashCode() == blueSquare.hashCode());

@@ -1,22 +1,20 @@
-package chen_ayaviri.common;
-
-import chen_ayaviri.map_representation.Placement;
-import chen_ayaviri.map_representation.Tile;
-import chen_ayaviri.map_representation.Posn;
-import chen_ayaviri.player.IPlayer;
-import chen_ayaviri.player.LocalPlayer;
-import chen_ayaviri.strategy.DAG;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import org.junit.Before;
-import org.junit.Test;
+package ayaviri.common;
 
 import static org.junit.Assert.*;
+
+import ayaviri.map_representation.Placement;
+import ayaviri.map_representation.Posn;
+import ayaviri.map_representation.Tile;
+import ayaviri.player.IPlayer;
+import ayaviri.player.LocalPlayer;
+import ayaviri.strategy.DAG;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.junit.Before;
+import org.junit.Test;
 
 public class GameStateTest {
     GameState gameState;
@@ -73,8 +71,11 @@ public class GameStateTest {
         player3 = "player3";
 
         playerTiles = new HashMap<String, List<Tile>>();
-        playerTiles.put(player2, new ArrayList<Tile>(Arrays.asList(redStar, blue8Star, purpleSquare, redCircle)));
-        playerTiles.put(player3, new ArrayList<Tile>(Arrays.asList(yellowStar, redCircle, redStar)));
+        playerTiles.put(
+                player2,
+                new ArrayList<Tile>(Arrays.asList(redStar, blue8Star, purpleSquare, redCircle)));
+        playerTiles.put(
+                player3, new ArrayList<Tile>(Arrays.asList(yellowStar, redCircle, redStar)));
         playerTiles.put(player1, new ArrayList<Tile>(Arrays.asList(purpleSquare, orange8Star)));
 
         players = new ArrayList<IPlayer>();
@@ -82,7 +83,9 @@ public class GameStateTest {
         players.add(new LocalPlayer(player3, new DAG()));
         players.add(new LocalPlayer(player1, new DAG()));
 
-        refereeTiles = new ArrayList<Tile>(Arrays.asList(greenCircle, orange8Star, purpleSquare, red8Star, blueStar));
+        refereeTiles =
+                new ArrayList<Tile>(
+                        Arrays.asList(greenCircle, orange8Star, purpleSquare, red8Star, blueStar));
 
         map = new QMap(redStar);
         map.placeTile(new Placement(red8Star, new Posn(0, 1)));
@@ -106,12 +109,17 @@ public class GameStateTest {
     @Test
     public void testGetActivePlayerHand() {
         ActivePlayerInfo gameStateInfo = gameState.getInfoForActivePlayer();
-        assertEquals(new ArrayList<Tile>(Arrays.asList(redStar, blue8Star, purpleSquare, redCircle)), gameStateInfo.getTiles());
+        assertEquals(
+                new ArrayList<Tile>(Arrays.asList(redStar, blue8Star, purpleSquare, redCircle)),
+                gameStateInfo.getTiles());
     }
 
     @Test
     public void testGetRefereeTiles() {
-        assertEquals(new ArrayList<Tile>(Arrays.asList(greenCircle, orange8Star, purpleSquare, red8Star, blueStar)), gameState.getRefereeTiles());
+        assertEquals(
+                new ArrayList<Tile>(
+                        Arrays.asList(greenCircle, orange8Star, purpleSquare, red8Star, blueStar)),
+                gameState.getRefereeTiles());
     }
 
     @Test
@@ -134,9 +142,13 @@ public class GameStateTest {
     public void testExchangeTurnValid() {
         assertTrue(gameState.checkLegalityOf(new GameState.ExchangeAction()));
         gameState.performCheckedTurnAction(new GameState.ExchangeAction());
-        assertEquals(new ArrayList<Tile>(Arrays.asList(blueStar, redStar, blue8Star, purpleSquare, redCircle)), gameState.getRefereeTiles());
+        assertEquals(
+                new ArrayList<Tile>(
+                        Arrays.asList(blueStar, redStar, blue8Star, purpleSquare, redCircle)),
+                gameState.getRefereeTiles());
         // TODO: figure out how to assert that the player has gotten their tiles
-        //assertEquals(new ArrayList<Tile>(Arrays.asList(greenCircle, orange8Star, purpleSquare, red8Star)), prevPlayer.getTiles());
+        // assertEquals(new ArrayList<Tile>(Arrays.asList(greenCircle, orange8Star, purpleSquare,
+        // red8Star)), prevPlayer.getTiles());
     }
 
     // exchangeActivePlayerTiles, refereeTiles < activePlayerHand
@@ -164,7 +176,9 @@ public class GameStateTest {
         gameState.advancePlayerQueue();
         ActivePlayerInfo gameStateInfo = gameState.getInfoForActivePlayer();
         assertEquals(player3, gameState.getActivePlayerState().getName());
-        assertEquals(new ArrayList<Tile>(Arrays.asList(orange8Star, purpleSquare, red8Star, blueStar)), gameState.getRefereeTiles());
+        assertEquals(
+                new ArrayList<Tile>(Arrays.asList(orange8Star, purpleSquare, red8Star, blueStar)),
+                gameState.getRefereeTiles());
 
         QMap testMap = new QMap(redStar);
         testMap.placeTile(new Placement(red8Star, new Posn(0, 1)));
@@ -173,13 +187,15 @@ public class GameStateTest {
         testMap.placeTile(new Placement(blue8Star, new Posn(2, 1)));
         assertEquals(testMap.getTiles(), gameStateInfo.getMap().getTiles());
 
-        //assertEquals(new ArrayList<Tile>(Arrays.asList(redStar, purpleSquare, redCircle, greenCircle)), prevPlayer.getTiles());
+        // assertEquals(new ArrayList<Tile>(Arrays.asList(redStar, purpleSquare, redCircle,
+        // greenCircle)), prevPlayer.getTiles());
     }
+
     @Test
     public void testPlaceTurnValid2() {
         List<Placement> testPlacement = new ArrayList<>();
-        testPlacement.add(new Placement(blue8Star, new Posn(2,1)));
-        testPlacement.add(new Placement(redCircle, new Posn(-1,1)));
+        testPlacement.add(new Placement(blue8Star, new Posn(2, 1)));
+        testPlacement.add(new Placement(redCircle, new Posn(-1, 1)));
         GameState.PlaceAction.Builder placeActionBuilder = new GameState.PlaceAction.Builder();
         for (Placement placement : testPlacement) {
             placeActionBuilder.addPlacement(placement);
@@ -191,25 +207,28 @@ public class GameStateTest {
         gameState.advancePlayerQueue();
         ActivePlayerInfo gameStateInfo = gameState.getInfoForActivePlayer();
         assertEquals(player3, gameState.getActivePlayerState().getName());
-        assertEquals(new ArrayList<Tile>(Arrays.asList(purpleSquare, red8Star, blueStar)), gameState.getRefereeTiles());
+        assertEquals(
+                new ArrayList<Tile>(Arrays.asList(purpleSquare, red8Star, blueStar)),
+                gameState.getRefereeTiles());
 
         QMap testMap = new QMap(redStar);
-        testMap.placeTile(new Placement(red8Star, new Posn(0,1)));
-        testMap.placeTile(new Placement(blueStar, new Posn(0,-1)));
-        testMap.placeTile(new Placement(orange8Star, new Posn(1,1)));
-        testMap.placeTile(new Placement(blue8Star, new Posn(2,1)));
-        testMap.placeTile(new Placement(redCircle, new Posn(-1,1)));
+        testMap.placeTile(new Placement(red8Star, new Posn(0, 1)));
+        testMap.placeTile(new Placement(blueStar, new Posn(0, -1)));
+        testMap.placeTile(new Placement(orange8Star, new Posn(1, 1)));
+        testMap.placeTile(new Placement(blue8Star, new Posn(2, 1)));
+        testMap.placeTile(new Placement(redCircle, new Posn(-1, 1)));
         assertEquals(testMap.getTiles(), gameStateInfo.getMap().getTiles());
 
-        //assertEquals(new ArrayList<Tile>(Arrays.asList(redStar, purpleSquare, greenCircle, orange8Star)), prevPlayer.getTiles());
+        // assertEquals(new ArrayList<Tile>(Arrays.asList(redStar, purpleSquare, greenCircle,
+        // orange8Star)), prevPlayer.getTiles());
     }
 
     @Test
     public void testPlaceTurnValid3() {
         List<Placement> testPlacement = new ArrayList<>();
-        testPlacement.add(new Placement(blue8Star, new Posn(2,1)));
-        testPlacement.add(new Placement(redCircle, new Posn(-1,1)));
-        testPlacement.add(new Placement(redStar, new Posn(-2,1)));
+        testPlacement.add(new Placement(blue8Star, new Posn(2, 1)));
+        testPlacement.add(new Placement(redCircle, new Posn(-1, 1)));
+        testPlacement.add(new Placement(redStar, new Posn(-2, 1)));
         GameState.PlaceAction.Builder placeActionBuilder = new GameState.PlaceAction.Builder();
         for (Placement placement : testPlacement) {
             placeActionBuilder.addPlacement(placement);
@@ -221,26 +240,28 @@ public class GameStateTest {
         gameState.advancePlayerQueue();
         ActivePlayerInfo gameStateInfo = gameState.getInfoForActivePlayer();
         assertEquals(player3, gameState.getActivePlayerState().getName());
-        assertEquals(new ArrayList<Tile>(Arrays.asList(red8Star, blueStar)), gameState.getRefereeTiles());
+        assertEquals(
+                new ArrayList<Tile>(Arrays.asList(red8Star, blueStar)),
+                gameState.getRefereeTiles());
 
         QMap testMap = new QMap(redStar);
-        testMap.placeTile(new Placement(red8Star, new Posn(0,1)));
-        testMap.placeTile(new Placement(blueStar, new Posn(0,-1)));
-        testMap.placeTile(new Placement(orange8Star, new Posn(1,1)));
-        testMap.placeTile(new Placement(blue8Star, new Posn(2,1)));
-        testMap.placeTile(new Placement(redCircle, new Posn(-1,1)));
-        testMap.placeTile(new Placement(redStar, new Posn(-2,1)));
+        testMap.placeTile(new Placement(red8Star, new Posn(0, 1)));
+        testMap.placeTile(new Placement(blueStar, new Posn(0, -1)));
+        testMap.placeTile(new Placement(orange8Star, new Posn(1, 1)));
+        testMap.placeTile(new Placement(blue8Star, new Posn(2, 1)));
+        testMap.placeTile(new Placement(redCircle, new Posn(-1, 1)));
+        testMap.placeTile(new Placement(redStar, new Posn(-2, 1)));
         assertEquals(testMap.getTiles(), gameStateInfo.getMap().getTiles());
 
-        //assertEquals(new ArrayList<Tile>(Arrays.asList(purpleSquare, greenCircle, orange8Star, purpleSquare)), prevPlayer.getTiles());
+        // assertEquals(new ArrayList<Tile>(Arrays.asList(purpleSquare, greenCircle, orange8Star,
+        // purpleSquare)), prevPlayer.getTiles());
     }
-
 
     @Test
     public void testPlaceTurnInvalidNoMatch() {
         List<Placement> testPlacement = new ArrayList<>();
-        testPlacement.add(new Placement(blue8Star, new Posn(1,1)));
-        testPlacement.add(new Placement(redCircle, new Posn(1,-1)));
+        testPlacement.add(new Placement(blue8Star, new Posn(1, 1)));
+        testPlacement.add(new Placement(redCircle, new Posn(1, -1)));
         GameState.PlaceAction.Builder placeActionBuilder = new GameState.PlaceAction.Builder();
         for (Placement placement : testPlacement) {
             placeActionBuilder.addPlacement(placement);
@@ -253,9 +274,18 @@ public class GameStateTest {
         assertEquals(player3, gameState.getActivePlayerState().getName());
         assertEquals(2, gameState.getNumberOfPlayers());
 
-        List<Tile> testRefereeTiles = new ArrayList<Tile>(Arrays.asList(greenCircle, orange8Star, purpleSquare,
-                                                                        red8Star, blueStar, redStar, blue8Star,
-                                                                        purpleSquare, redCircle));
+        List<Tile> testRefereeTiles =
+                new ArrayList<Tile>(
+                        Arrays.asList(
+                                greenCircle,
+                                orange8Star,
+                                purpleSquare,
+                                red8Star,
+                                blueStar,
+                                redStar,
+                                blue8Star,
+                                purpleSquare,
+                                redCircle));
         assertEquals(testRefereeTiles, gameState.getRefereeTiles());
     }
 
@@ -324,8 +354,8 @@ public class GameStateTest {
     @Test
     public void testPlaceTurnInvalidNotInHand() {
         List<Placement> testPlacement = new ArrayList<>();
-        testPlacement.add(new Placement(blue8Star, new Posn(1,2)));
-        testPlacement.add(new Placement(yellowStar, new Posn(1,0)));
+        testPlacement.add(new Placement(blue8Star, new Posn(1, 2)));
+        testPlacement.add(new Placement(yellowStar, new Posn(1, 0)));
         GameState.PlaceAction.Builder placeActionBuilder = new GameState.PlaceAction.Builder();
         for (Placement placement : testPlacement) {
             placeActionBuilder.addPlacement(placement);
@@ -338,9 +368,18 @@ public class GameStateTest {
         assertEquals(player3, gameState.getActivePlayerState().getName());
         assertEquals(2, gameState.getNumberOfPlayers());
 
-        List<Tile> testRefereeTiles = new ArrayList<Tile>(Arrays.asList(greenCircle, orange8Star, purpleSquare,
-                                                                        red8Star, blueStar, redStar, blue8Star,
-                                                                        purpleSquare, redCircle));
+        List<Tile> testRefereeTiles =
+                new ArrayList<Tile>(
+                        Arrays.asList(
+                                greenCircle,
+                                orange8Star,
+                                purpleSquare,
+                                red8Star,
+                                blueStar,
+                                redStar,
+                                blue8Star,
+                                purpleSquare,
+                                redCircle));
         assertEquals(testRefereeTiles, gameState.getRefereeTiles());
     }
 
@@ -350,7 +389,7 @@ public class GameStateTest {
     @Test
     public void testScoreTrivial() {
         List<Placement> testPlacement = new ArrayList<>();
-        testPlacement.add(new Placement(blue8Star, new Posn(2,1)));
+        testPlacement.add(new Placement(blue8Star, new Posn(2, 1)));
         GameState.PlaceAction.Builder placeActionBuilder = new GameState.PlaceAction.Builder();
         for (Placement placement : testPlacement) {
             placeActionBuilder.addPlacement(placement);
@@ -367,17 +406,17 @@ public class GameStateTest {
     @Test
     public void testScorePlaceAllInHand() {
         map = new QMap(redStar);
-        map.placeTile(new Placement(red8Star, new Posn(0,1)));
-        map.placeTile(new Placement(blueStar, new Posn(0,-1)));
-        map.placeTile(new Placement(orange8Star, new Posn(1,1)));
+        map.placeTile(new Placement(red8Star, new Posn(0, 1)));
+        map.placeTile(new Placement(blueStar, new Posn(0, -1)));
+        map.placeTile(new Placement(orange8Star, new Posn(1, 1)));
 
         playerTiles.put(player2, new ArrayList<>(Arrays.asList(blue8Star, blueStar)));
 
         gameState = new GameState(players, playerTiles, map, refereeTiles);
 
         List<Placement> testPlacement = new ArrayList<>();
-        testPlacement.add(new Placement(blue8Star, new Posn(2,1)));
-        testPlacement.add(new Placement(blueStar, new Posn(3,1)));
+        testPlacement.add(new Placement(blue8Star, new Posn(2, 1)));
+        testPlacement.add(new Placement(blueStar, new Posn(3, 1)));
         GameState.PlaceAction.Builder placeActionBuilder = new GameState.PlaceAction.Builder();
         for (Placement placement : testPlacement) {
             placeActionBuilder.addPlacement(placement);
@@ -387,24 +426,26 @@ public class GameStateTest {
         gameState.performCheckedTurnAction(placeAction);
 
         int score = gameState.scorePlacement(testPlacement, 2);
-        assertEquals(6 + gameState.END_OF_GAME_BONUS, score); // placed 2 + 4 contiguous tiles + end bonus
+        assertEquals(
+                6 + gameState.END_OF_GAME_BONUS,
+                score); // placed 2 + 4 contiguous tiles + end bonus
     }
 
     // place 2 tiles in same contiguous sequence (test for double counting)
     @Test
     public void testScoreSameSequence() {
         map = new QMap(redStar);
-        map.placeTile(new Placement(red8Star, new Posn(0,1)));
-        map.placeTile(new Placement(blueStar, new Posn(0,-1)));
-        map.placeTile(new Placement(orange8Star, new Posn(1,1)));
+        map.placeTile(new Placement(red8Star, new Posn(0, 1)));
+        map.placeTile(new Placement(blueStar, new Posn(0, -1)));
+        map.placeTile(new Placement(orange8Star, new Posn(1, 1)));
 
         playerTiles.put(player2, new ArrayList<>(Arrays.asList(blue8Star, blueStar, yellowStar)));
 
         gameState = new GameState(players, playerTiles, map, refereeTiles);
 
         List<Placement> testPlacement = new ArrayList<>();
-        testPlacement.add(new Placement(blue8Star, new Posn(2,1)));
-        testPlacement.add(new Placement(blueStar, new Posn(3,1)));
+        testPlacement.add(new Placement(blue8Star, new Posn(2, 1)));
+        testPlacement.add(new Placement(blueStar, new Posn(3, 1)));
         GameState.PlaceAction.Builder placeActionBuilder = new GameState.PlaceAction.Builder();
         for (Placement placement : testPlacement) {
             placeActionBuilder.addPlacement(placement);
@@ -419,24 +460,24 @@ public class GameStateTest {
 
     // place 2 tiles in different contiguous sequence
     /*
-        BST
-        RST     bst
-        R8S O8S b8s <- does this get double-counted?
-     */
+       BST
+       RST     bst
+       R8S O8S b8s <- does this get double-counted?
+    */
     @Test
     public void testScoreDifferentSequence() {
         map = new QMap(redStar);
-        map.placeTile(new Placement(red8Star, new Posn(0,1)));
-        map.placeTile(new Placement(blueStar, new Posn(0,-1)));
-        map.placeTile(new Placement(orange8Star, new Posn(1,1)));
+        map.placeTile(new Placement(red8Star, new Posn(0, 1)));
+        map.placeTile(new Placement(blueStar, new Posn(0, -1)));
+        map.placeTile(new Placement(orange8Star, new Posn(1, 1)));
 
         playerTiles.put(player2, new ArrayList<>(Arrays.asList(blue8Star, blueStar, yellowStar)));
 
         gameState = new GameState(players, playerTiles, map, refereeTiles);
 
         List<Placement> testPlacement = new ArrayList<>();
-        testPlacement.add(new Placement(blue8Star, new Posn(2,1)));
-        testPlacement.add(new Placement(blueStar, new Posn(2,0)));
+        testPlacement.add(new Placement(blue8Star, new Posn(2, 1)));
+        testPlacement.add(new Placement(blueStar, new Posn(2, 0)));
         GameState.PlaceAction.Builder placeActionBuilder = new GameState.PlaceAction.Builder();
         for (Placement placement : testPlacement) {
             placeActionBuilder.addPlacement(placement);
@@ -446,24 +487,25 @@ public class GameStateTest {
         gameState.performCheckedTurnAction(placeAction);
 
         int score = gameState.scorePlacement(testPlacement, 3);
-        assertEquals(7, score); // placed 2 + 3 contiguous row + 2 contiguous column (corner is double-counted)
+        assertEquals(7, score); // placed 2 + 3 contiguous row + 2 contiguous column (corner is
+        // double-counted)
     }
 
     // place 1 tile to complete 1 Q by common shape
     @Test
     public void testScoreQPlace1x1Shape() {
         map = new QMap(redStar);
-        map.placeTile(new Placement(orangeStar, new Posn(0,1)));
-        map.placeTile(new Placement(greenStar, new Posn(0,2)));
-        map.placeTile(new Placement(purpleStar, new Posn(0,3)));
-        map.placeTile(new Placement(yellowStar, new Posn(0,4)));
+        map.placeTile(new Placement(orangeStar, new Posn(0, 1)));
+        map.placeTile(new Placement(greenStar, new Posn(0, 2)));
+        map.placeTile(new Placement(purpleStar, new Posn(0, 3)));
+        map.placeTile(new Placement(yellowStar, new Posn(0, 4)));
 
         playerTiles.put(player2, new ArrayList<>(Arrays.asList(blue8Star, blueStar, yellowStar)));
 
         gameState = new GameState(players, playerTiles, map, refereeTiles);
 
         List<Placement> testPlacement = new ArrayList<>();
-        testPlacement.add(new Placement(blueStar, new Posn(0,5)));
+        testPlacement.add(new Placement(blueStar, new Posn(0, 5)));
         GameState.PlaceAction.Builder placeActionBuilder = new GameState.PlaceAction.Builder();
         for (Placement placement : testPlacement) {
             placeActionBuilder.addPlacement(placement);
@@ -490,7 +532,7 @@ public class GameStateTest {
         gameState = new GameState(players, playerTiles, map, refereeTiles);
 
         List<Placement> testPlacement = new ArrayList<>();
-        testPlacement.add(new Placement(blueStar, new Posn(5,0)));
+        testPlacement.add(new Placement(blueStar, new Posn(5, 0)));
         GameState.PlaceAction.Builder placeActionBuilder = new GameState.PlaceAction.Builder();
         for (Placement placement : testPlacement) {
             placeActionBuilder.addPlacement(placement);
@@ -507,17 +549,17 @@ public class GameStateTest {
     @Test
     public void testScoreQPlace2x1() {
         map = new QMap(redStar);
-        map.placeTile(new Placement(orangeStar, new Posn(0,1)));
-        map.placeTile(new Placement(greenStar, new Posn(0,2)));
-        map.placeTile(new Placement(purpleStar, new Posn(0,3)));
+        map.placeTile(new Placement(orangeStar, new Posn(0, 1)));
+        map.placeTile(new Placement(greenStar, new Posn(0, 2)));
+        map.placeTile(new Placement(purpleStar, new Posn(0, 3)));
 
         playerTiles.put(player2, new ArrayList<>(Arrays.asList(blue8Star, blueStar, yellowStar)));
 
         gameState = new GameState(players, playerTiles, map, refereeTiles);
 
         List<Placement> testPlacement = new ArrayList<>();
-        testPlacement.add(new Placement(yellowStar, new Posn(0,4)));
-        testPlacement.add(new Placement(blueStar, new Posn(0,5)));
+        testPlacement.add(new Placement(yellowStar, new Posn(0, 4)));
+        testPlacement.add(new Placement(blueStar, new Posn(0, 5)));
         GameState.PlaceAction.Builder placeActionBuilder = new GameState.PlaceAction.Builder();
         for (Placement placement : testPlacement) {
             placeActionBuilder.addPlacement(placement);
@@ -532,20 +574,20 @@ public class GameStateTest {
 
     // place 1 tile to complete 2 Q, one by shape and one by color
     /*
-            RST
-            OST
-            GST
-            PST
-            YST YCI
-       ? -> bst BCI BSQ BDI B8S BCL
-     */
+           RST
+           OST
+           GST
+           PST
+           YST YCI
+      ? -> bst BCI BSQ BDI B8S BCL
+    */
     @Test
     public void testScoreQPlace1x2() {
         map = new QMap(redStar);
-        map.placeTile(new Placement(orangeStar, new Posn(0,1)));
-        map.placeTile(new Placement(greenStar, new Posn(0,2)));
-        map.placeTile(new Placement(purpleStar, new Posn(0,3)));
-        map.placeTile(new Placement(yellowStar, new Posn(0,4)));
+        map.placeTile(new Placement(orangeStar, new Posn(0, 1)));
+        map.placeTile(new Placement(greenStar, new Posn(0, 2)));
+        map.placeTile(new Placement(purpleStar, new Posn(0, 3)));
+        map.placeTile(new Placement(yellowStar, new Posn(0, 4)));
         map.placeTile(new Placement(yellowCircle, new Posn(1, 4)));
         map.placeTile(new Placement(blueCircle, new Posn(1, 5)));
         map.placeTile(new Placement(blueSquare, new Posn(2, 5)));
@@ -558,7 +600,7 @@ public class GameStateTest {
         gameState = new GameState(players, playerTiles, map, refereeTiles);
 
         List<Placement> testPlacement = new ArrayList<>();
-        testPlacement.add(new Placement(blueStar, new Posn(0,5)));
+        testPlacement.add(new Placement(blueStar, new Posn(0, 5)));
         GameState.PlaceAction.Builder placeActionBuilder = new GameState.PlaceAction.Builder();
         for (Placement placement : testPlacement) {
             placeActionBuilder.addPlacement(placement);
@@ -568,6 +610,8 @@ public class GameStateTest {
         gameState.performCheckedTurnAction(placeAction);
 
         int score = gameState.scorePlacement(testPlacement, 3);
-        assertEquals(13 + 2 * gameState.Q_BONUS, score); // placed 1 + 12 contiguous + 12 bonus Q (double-counted placed tile)
+        assertEquals(
+                13 + 2 * gameState.Q_BONUS,
+                score); // placed 1 + 12 contiguous + 12 bonus Q (double-counted placed tile)
     }
 }

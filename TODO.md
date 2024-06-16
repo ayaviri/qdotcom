@@ -11,11 +11,14 @@
 - In order to pull out the initialisation of the ServerSocket in the Server component into its own function (so that that unit of code can perform error handling as needed), the ServerSocket field must be made non-final
 
 # Stickier Fingers
-- NameSubmission over a new kind of player that requests name over TCP 
+- NameSubmission could be replaced with over a new kind of player that requests name over TCP 
 - Sockets could be closed as a punishment in WaitingPeriod's call to attemptToGetPlayerName as opposed to being closed at the end. In our current client implementation, if the 
 socket is closed as soon as the name submission timeout is hit, the referee proxy's playToCompletion ends immediately, and the player's lifeline ends there, no issue. In the case
 the socket isn't closed until the end of the game, no JSON ever comes to the referee proxy, player's lifeline ends at the end of the game
 - GameStates need to (briefly) exist without player proxies...
+
+# Stickiest Fingers
+- The workaround client side timeout on players and their method invocations must be longer than the server side timeout limit, otherwise the player unnecessarily commits suicide. This is bad.
 
 # Questions
 - A RoundResult has all of the information it needs to determine whether the round it summarises was a terminal round. Should the functionality to check that be in the RoundResult or Referee component ?

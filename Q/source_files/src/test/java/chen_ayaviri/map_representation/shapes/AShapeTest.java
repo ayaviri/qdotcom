@@ -1,9 +1,9 @@
-package chen_ayaviri.map_representation.shapes;
+package ayaviri.map_representation.shapes;
+
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class AShapeTest {
     private AShape circle;
@@ -27,10 +27,9 @@ public class AShapeTest {
 
         // transitivity
         assertTrue(
-                circle.equals(circle2) &&
-                        circle2.equals(new Circle()) &&
-                        new Circle().equals(circle)
-        );
+                circle.equals(circle2)
+                        && circle2.equals(new Circle())
+                        && new Circle().equals(circle));
 
         // negation
         assertFalse(circle.equals(eightStar));
@@ -42,14 +41,14 @@ public class AShapeTest {
         assertEquals(circle.hashCode(), circle.hashCode());
 
         // symmetry
-        assertTrue(circle.hashCode() == circle2.hashCode() && circle2.hashCode() == circle.hashCode());
+        assertTrue(
+                circle.hashCode() == circle2.hashCode() && circle2.hashCode() == circle.hashCode());
 
         // transitivity
         assertTrue(
-                circle.hashCode() == circle2.hashCode() &&
-                        circle2.hashCode() == new Circle().hashCode() &&
-                        new Circle().hashCode() == circle.hashCode()
-        );
+                circle.hashCode() == circle2.hashCode()
+                        && circle2.hashCode() == new Circle().hashCode()
+                        && new Circle().hashCode() == circle.hashCode());
 
         // negation
         assertFalse(circle.hashCode() == eightStar.hashCode());
